@@ -1,6 +1,6 @@
 {
     "files.associations": {
-        "random": "c",
-        "stdio.h": "c"
+        "timer.h": "c",
+        "lab2.h": "c"
     }
 }
