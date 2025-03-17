@@ -85,9 +85,18 @@ int(kbd_test_scan)() {
 
 int(kbd_test_poll)() {
   /* To be completed by the students */
-  printf("%s is not yet implemented!\n", __func__);
+  while (scancode != KB_BREAK_ESC)  {
 
-  return 1;
+    // Lê o scancode
+    if (read_keyboard_output(KEYBOARD_OUT_CMD, &scancode, 0) == 0) {
+      bool is_break = !(scancode & KB_MAKE_CODE);  // Verificar se é um break code
+      int size = (scancode == KB_TWO_BYTES) ? 2 : 1;   // Verificar o tamanho do scancode
+
+      (kbd_print_scancode)(is_break, size, &scancode);  // Imprimir o scancode
+    }
+  }
+
+  return kb_restore_settings();
 }
 
 int(kbd_test_timed_scan)(uint8_t n) {
