@@ -4,7 +4,6 @@ uint8_t scancode = 0;
 int kb_hook_id = 1;
 
 void (kbc_ih)() {
-    printf("kbc_ih\n");
     // Lê o scancode
     if (read_keyboard_output(KEYBOARD_OUT_CMD, &scancode, 0)) {
         printf("Error reading scancode\n");
