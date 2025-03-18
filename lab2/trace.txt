@@ -6,9 +6,9 @@
   > timer_subscribe_int(addr: 0xeffff727 [0])
     @timer.c:75, timer_subscribe_int
       sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE, &hook_id)
-    > sys_irqsetpolicy(0, 1, addr: 0x822d658 [0])
-    < sys_irqsetpolicy(0, 1, addr: 0x822d658 [10]) -> (ret: 0)
-  < timer_subscribe_int(addr: 0xeffff727 [1]) -> (ret: 0)
+    > sys_irqsetpolicy(0, 1, addr: 0x822d668 [0])
+    < sys_irqsetpolicy(0, 1, addr: 0x822d668 [10]) -> (ret: 0)
+  < timer_subscribe_int(addr: 0xeffff727 [0]) -> (ret: 0)
   @lab2.c:73, timer_test_int
     driver_receive(ANY, &msg, &ipc_st)
   > driver_receive(ANY, addr: 0xeffff6e0, addr: 0xeffff728)
@@ -3653,6 +3653,6 @@
     timer_unsubscribe_int()
     @timer.c:84, timer_unsubscribe_int
       sys_irqrmpolicy(&hook_id)
-    > sys_irqrmpolicy(addr: 0x822d658 [10])
-    < sys_irqrmpolicy(addr: 0x822d658 [10]) -> (ret: 0)
+    > sys_irqrmpolicy(addr: 0x822d668 [10])
+    < sys_irqrmpolicy(addr: 0x822d668 [10]) -> (ret: 0)
 < timer_test_int(10) -> (ret: 0)

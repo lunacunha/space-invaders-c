@@ -1,32 +1,52 @@
-Makecode: 0x18
-Breakcode: 0x98
+Breakcode: 0x9c
+Time elapsed: 1
+Time elapsed: 2
+Time elapsed: 3
+Makecode: 0x17
+Breakcode: 0x97
+Time elapsed: 1
+Time elapsed: 2
+Time elapsed: 3
+Makecode: 0x23
+Breakcode: 0xa3
+Time elapsed: 1
+Time elapsed: 2
+Time elapsed: 3
+Time elapsed: 4
+Time elapsed: 5
 Makecode: 0x19
 Breakcode: 0x99
-Makecode: 0x10
-Breakcode: 0x90
-Makecode: 0x13
-Breakcode: 0x93
-Makecode: 0x17
-Breakcode: 0x97
-Makecode: 0x24
-Breakcode: 0xa4
-Makecode: 0x15
-Makecode: 0x16
-Breakcode: 0x96
-Breakcode: 0x95
+Time elapsed: 1
+Time elapsed: 2
+Time elapsed: 3
+Makecode: 0x11
+Breakcode: 0x91
+Time elapsed: 1
+Time elapsed: 2
+Time elapsed: 3
+Time elapsed: 4
+Time elapsed: 5
+Makecode: 0x23
+Breakcode: 0xa3
+Time elapsed: 1
+Time elapsed: 2
+Time elapsed: 3
 Makecode: 0x22
-Makecode: 0x21
-Breakcode: 0xa1
 Breakcode: 0xa2
-Makecode: 0x22
-Makecode: 0x21
-Breakcode: 0xa1
-Breakcode: 0xa2
-Makecode: 0x20
-Breakcode: 0xa0
-Makecode: 0x17
-Breakcode: 0x97
-Makecode: 0x20
-Breakcode: 0xa0
+Time elapsed: 1
+Time elapsed: 2
+Time elapsed: 3
+Time elapsed: 4
+Time elapsed: 5
+Time elapsed: 6
+Time elapsed: 7
+Makecode: 0x30
+Breakcode: 0xb0
+Time elapsed: 1
+Time elapsed: 2
+Time elapsed: 3
+Time elapsed: 4
+Time elapsed: 5
+Time elapsed: 6
 Makecode: 0x01
 Breakcode: 0x81
