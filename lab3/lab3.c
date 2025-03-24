@@ -5,7 +5,7 @@
 #include "kb_interrupts.h"
 
 extern uint8_t scancode;
-uint32_t counter_keyboard = 0;
+extern int counter;
 
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
@@ -74,25 +74,90 @@ int(kbd_test_scan)() {
     return 1;
   }
 
-  // Imprimir o número de sys_inb calls
-  if((kbd_print_no_sysinb)(counter_keyboard)) {
-    printf("Error printing number of sys_inb calls\n");
-    return 1;
-  }
-
   return 0;
 }
 
 int(kbd_test_poll)() {
   /* To be completed by the students */
-  printf("%s is not yet implemented!\n", __func__);
+  while (scancode != KB_BREAK_ESC)  {
 
-  return 1;
+    // Lê o scancode
+    if (read_keyboard_output(KEYBOARD_OUT_CMD, &scancode, 0) == 0) {
+      bool is_break = !(scancode & KB_MAKE_CODE);  // Verificar se é um break code
+      int size = (scancode == KB_TWO_BYTES) ? 2 : 1;   // Verificar o tamanho do scancode
+
+      (kbd_print_scancode)(is_break, size, &scancode);  // Imprimir o scancode
+    }
+  }
+
+  return kb_restore_settings();
 }
 
 int(kbd_test_timed_scan)(uint8_t n) {
   /* To be completed by the students */
-  printf("%s is not yet implemented!\n", __func__);
 
-  return 1;
+  int ipc_st;
+  uint8_t irq_set_keyboard, irq_set_timer;
+  message msg;
+  int time_elapsed = 0;
+
+  // Subscrever as interrupções
+  if ((kb_subscribe_int)(&irq_set_keyboard)) {  // teclado
+    printf("Error subscribing keyboard\n");
+    return 1;
+  }
+
+  if ((timer_subscribe_int)(&irq_set_timer)) {  // timer
+    printf("Error subscribing timer\n");
+    return 1;
+  }
+
+  // Ciclo de interrupções
+  while (scancode != KB_BREAK_ESC && time_elapsed < n) {
+    if (driver_receive(ANY, &msg, &ipc_st)) {   // Receber a mensagem
+      printf("Error: driver_receive failed with: %d", ipc_st);
+      continue;
+    }
+
+    if (is_ipc_notify(ipc_st)) {  // Verificar se a mensagem é uma notificação
+      switch (_ENDPOINT_P(msg.m_source)) {
+        case HARDWARE:  
+          if (msg.m_notify.interrupts & BIT(irq_set_keyboard)) {   // Verificar se a interrupção é do teclado
+            kbc_ih();   // Tratar a interrupção
+
+            bool is_break = !(scancode & KB_MAKE_CODE);  // Verificar se é um break code
+            int size = (scancode == KB_TWO_BYTES) ? 2 : 1;   // Verificar o tamanho do scancode
+
+            (kbd_print_scancode)(is_break, size, &scancode);  // Imprimir o scancode
+
+            time_elapsed = 0;  // Resetar o tempo
+          }
+
+          if (msg.m_notify.interrupts & BIT(irq_set_timer)) {   // Verificar se a interrupção é do timer
+            timer_int_handler();  // Incrementar o contador de interrupções do timer
+
+            if (counter % 60 == 0) {
+              time_elapsed++;  // Incrementar o tempo
+              printf("Time elapsed: %d\n", time_elapsed);
+            }
+          }
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  // Cancelar a subscrição das interrupções
+  if ((kb_unsubscribe_int)()) {  // teclado
+    printf("Error unsubscribing keyboard\n");
+    return 1;
+  }
+
+  if ((timer_unsubscribe_int)()) {  // timer
+    printf("Error unsubscribing timer\n");
+    return 1;
+  }
+
+  return 0;
 }

@@ -1,191 +1,50 @@
-kbc_ih
 Breakcode: 0x9c
-kbc_ih
-Makecode: 0x10
-kbc_ih
-Breakcode: 0x90
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x4d
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xcd
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x4d
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xcd
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x4b
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xcb
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x48
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xc8
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x48
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xc8
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x50
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xd0
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x50
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xd0
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x48
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xc8
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x4b
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xcb
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x48
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xc8
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x4b
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xcb
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x48
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xc8
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x4d
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xcd
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x4d
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xcd
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x50
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xd0
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x48
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xc8
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x50
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xd0
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x4b
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x48
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xcb
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xc8
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x4b
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xcb
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x48
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xc8
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Makecode: 0x48
-kbc_ih
-Breakcode: 0xe0 0x00
-kbc_ih
-Breakcode: 0xc8
-kbc_ih
-Makecode: 0x26
-kbc_ih
-Breakcode: 0xa6
-kbc_ih
-Makecode: 0x01
-kbc_ih
-Breakcode: 0x81
-sys_inb_calls: 0
+Time elapsed: 1
+Time elapsed: 2
+Time elapsed: 3
+Time elapsed: 4
+Time elapsed: 5
+Time elapsed: 6
+Makecode: 0x24
+Breakcode: 0xa4
+Time elapsed: 1
+Time elapsed: 2
+Time elapsed: 3
+Time elapsed: 4
+Time elapsed: 5
+Time elapsed: 6
+Time elapsed: 7
+Makecode: 0x21
+Breakcode: 0xa1
+Time elapsed: 1
+Time elapsed: 2
+Time elapsed: 3
+Time elapsed: 4
+Time elapsed: 5
+Time elapsed: 6
+Time elapsed: 7
+Makecode: 0x20
+Breakcode: 0xa0
+Time elapsed: 1
+Time elapsed: 2
+Time elapsed: 3
+Time elapsed: 4
+Makecode: 0x13
+Breakcode: 0x93
+Time elapsed: 1
+Time elapsed: 2
+Time elapsed: 3
+Time elapsed: 4
+Time elapsed: 5
+Makecode: 0x25
+Breakcode: 0xa5
+Time elapsed: 1
+Time elapsed: 2
+Time elapsed: 3
+Time elapsed: 4
+Time elapsed: 5
+Time elapsed: 6
+Time elapsed: 7
+Time elapsed: 8
+Time elapsed: 9
+Time elapsed: 10

@@ -79,7 +79,7 @@ int(timer_test_int)(uint8_t time) {
     if (is_ipc_notify(ipc_st)) {
       switch (_ENDPOINT_P(msg.m_source)) {
         case HARDWARE:
-          if (msg.m_notify.interrupts & irq_set) {    // Verificar se a interrupção é do timer 
+          if (msg.m_notify.interrupts & BIT(irq_set)) {    // Verificar se a interrupção é do timer 
             timer_int_handler();                      // Incrementar o contador de interrupções
 
             if (counter % 60 == 0) {
