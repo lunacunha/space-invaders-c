@@ -7,7 +7,7 @@
 
 // Any header files included below this line should have been created by you
 
-#include <graphic.c>
+#include <graphic.h>
 
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
 }
 
 int(video_test_init)(uint16_t mode, uint8_t delay) {
-    if (set_graphic_mode(mode) != 0) return 1;
+    if (set_graphical_mode(mode) != 0) return 1;
     sleep(delay);
     if (vg_exit() != 0) return 1;
     return 0;
@@ -79,4 +79,4 @@ int(video_test_controller)() {
   printf("%s(): under construction\n", __func__);
 
   return 1;
-}
+} 
