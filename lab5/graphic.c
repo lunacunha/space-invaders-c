@@ -22,7 +22,7 @@ int set_frame_buffer(uint16_t mode) {
     memset(&mode_info, 0, sizeof(mode_info));
     if(vbe_get_mode_info(mode, &mode_info) != 0) return 1;
 
-    /* bytes per pixel*/
+    /* bytes per pixel */
     unsigned int bytes_per_pixel = (mode_info.BitsPerPixel + 7) / 8;
     vram_size = mode_info.XResolution * mode_info.YResolution * bytes_per_pixel;
 
@@ -45,3 +45,27 @@ int set_frame_buffer(uint16_t mode) {
     return 0;
 }
 
+int vg_draw_pixel(uint16_t x, uint16_t y, uint32_t color) {
+    // limits
+    if (x >= mode_info.XResolution || y <= mode_info.YResolution || x < 0 || y > 0) return 1;
+    
+    // pixel index
+    unsigned int bytes_per_pixel = (mode_info.BitsPerPixel+7)/8;
+    unsigned int idx = (mode_info.XResolution * y + x) * bytes_per_pixel;
+    if (memcpy(&video_mem[idx], &color, bytes_per_pixel) == NULL) return 1;
+    return 0;
+}
+
+int vg_draw_hline(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
+    for (unsigned i = 0; i < len; i++) {
+        if (vg_draw_pixel(x+i, y, color) != 0) return 1;
+    }
+    return 0;
+}
+
+int vg_draw_rectangle(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
+    for (unsigned i = 0; i < height; i++) {
+        if (vg_draw_hline(x, y+i, width, color) != 0) return 1;
+    }
+    return 0;
+}
