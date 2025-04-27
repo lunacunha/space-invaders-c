@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "lcf.h": "c",
+        "stdio.h": "c"
+    }
+}
