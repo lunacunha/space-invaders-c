@@ -14,7 +14,7 @@ int (set_graphical_mode)(uint16_t mode) {
     return 0;
 }
 
-static void *video_mem;         /* frame-buffer VM address (static global variable*/ 
+uint8_t *video_mem; /* frame-buffer VM address (static global variable) */ 
 vbe_mode_info_t mode_info;
 unsigned int vram_size;
 
@@ -47,7 +47,7 @@ int set_frame_buffer(uint16_t mode) {
 
 int vg_draw_pixel(uint16_t x, uint16_t y, uint32_t color) {
     // limits
-    if (x >= mode_info.XResolution || y <= mode_info.YResolution || x < 0 || y > 0) return 1;
+    if (x >= mode_info.XResolution || y >= mode_info.YResolution || x < 0 || y < 0) return 1;
     
     // pixel index
     unsigned int bytes_per_pixel = (mode_info.BitsPerPixel+7)/8;
@@ -56,16 +56,39 @@ int vg_draw_pixel(uint16_t x, uint16_t y, uint32_t color) {
     return 0;
 }
 
-int vg_draw_hline(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
+int (vg_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
     for (unsigned i = 0; i < len; i++) {
         if (vg_draw_pixel(x+i, y, color) != 0) return 1;
     }
     return 0;
 }
 
-int vg_draw_rectangle(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
+int (vg_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
     for (unsigned i = 0; i < height; i++) {
         if (vg_draw_hline(x, y+i, width, color) != 0) return 1;
     }
     return 0;
 }
+
+int norm_color(uint32_t color, uint32_t *n_color) {
+    if (mode_info.BitsPerPixel == 32) {*n_color = color;}
+    else {*n_color = color & (BIT(mode_info.BitsPerPixel) - 1);}
+    return 0;
+}
+
+/*
+int (print_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
+    xpm_image_t image;
+    uint8_t temp_col = xpm_load(xpm, XPM_8_8_8_8, &image);
+    uint32_t *col = (uint32_t *)temp_col;
+    for (int h = 0; h < image.height; h++) {
+        for (int w = 0; w < image.width; w++) {
+            if (vg_draw_pixel(w+x, h+y, *col) != 0) return 1;
+            col++;
+        }
+    }
+
+}
+*/
+
+

@@ -4,10 +4,13 @@
 #include <lcom/lab5.h>
 #include <stdint.h>
 #include <stdio.h>
-
+#include <kb_controller.h>
 // Any header files included below this line should have been created by you
-
 #include <graphic.h>
+#include <kb_interrupts.h>
+
+extern uint8_t scancode;
+extern int counter;
 
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
@@ -40,14 +43,63 @@ int(video_test_init)(uint16_t mode, uint8_t delay) {
     return 0;
 }
 
+int (waiting_ESC)() {
+  int ipc_st;
+  uint8_t irq_set;
+  message msg;
+
+  if ((kb_subscribe_int)(&irq_set)) {
+    printf("Error subscribing keyboard\n");
+    return 1;
+  }
+
+  while (scancode != KB_BREAK_ESC) {
+    if (driver_receive(ANY, &msg, &ipc_st)) {   // Receber a mensagem
+      printf("Error: driver_receive failed with: %d", ipc_st);
+      continue;
+    }
+  
+    if (is_ipc_notify(ipc_st)) {  // Verificar se a mensagem é uma notificação
+      switch (_ENDPOINT_P(msg.m_source)) {
+        case HARDWARE:  
+          if (msg.m_notify.interrupts & BIT(irq_set)) {   // Verificar se a interrupção é do teclado
+            kbc_ih();   // Tratar a interrupção
+            break;
+          }   
+          break;
+        default:
+          break;
+      }
+    }
+  }
+  if ((kb_unsubscribe_int)()) {
+    printf("Error unsubscribing keyboard\n");
+    return 1;
+  }
+  return 0;
+
+}
 
 int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y,
                           uint16_t width, uint16_t height, uint32_t color) {
-  /* To be completed */
-  printf("%s(0x%03X, %u, %u, %u, %u, 0x%08x): under construction\n",
-         __func__, mode, x, y, width, height, color);
 
-  return 1;
+    printf("nao\n");
+                         
+  
+  if (set_frame_buffer(mode) != 0) return 1;
+
+  if (set_graphical_mode(mode) != 0) return 1;
+
+  uint32_t n_color;
+  if (norm_color(color, &n_color) != 0) return 1;
+
+  if (vg_draw_rectangle(x, y, width, height, color) != 0) return 1;
+  
+  if (waiting_ESC() != 0) return 1;
+
+  if (vg_exit() != 0) return 1;
+
+  return 0;
 }
 
 int(video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, uint8_t step) {

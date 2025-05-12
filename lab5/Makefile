@@ -2,7 +2,7 @@
 PROG=lab5
 
 # source code files to be compiled
-SRCS = lab5.c graphic.c
+SRCS = lab5.c graphic.c kb_controller.c kb_interrupts.c timer.c utils.c
 
 # additional compilation flags
 # "-Wall -Wextra -Werror -I . -std=c11 -Wno-unused-parameter" are already set
