@@ -104,7 +104,6 @@ int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y,
 }
 
 int(video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, uint8_t step) {
-  /* To be completed */
   if (set_frame_buffer(mode) != 0) return 1;
   if (set_graphical_mode(mode) != 0) return 1;
 
@@ -114,17 +113,31 @@ int(video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, ui
   for (int i = 0; i < no_rectangles; i++) {
     for (int j = 0; j < no_rectangles; j++) {
       uint32_t color;
+      
+      // direct mode
+      if (mode_info.MemoryModel == 0x06) color = dir_mode(j, i, step, first);
+      
+      // indexed mode
+      else color = idx_mode(j, i, step, first, no_rectangles);
 
+      if (vg_draw_rectangle(j*h, i*v, h, v, color) != 0) return 1;
     }
   }
+
+  if (waiting_ESC() != 0) return 1;
+  if (vg_exit() != 0) return 1;
   return 0;
 }
 
 int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
-  /* To be completed */
-  printf("%s(%8p, %u, %u): under construction\n", __func__, xpm, x, y);
-
-  return 1;
+  uint16_t mode = 0x105; // indexed mode only
+  
+  if (set_frame_buffer(mode) != 0) return 1;
+  if (set_graphical_mode(mode) != 0) return 1;
+  if (print_xpm(xpm, x, y) != 0) return 1;
+  if (waiting_ESC()!=0) return 1;
+  if (vg_exit() != 0) return 1;
+  return 0;
 }
 
 int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint16_t yf,
