@@ -77,7 +77,7 @@ int norm_color(uint32_t color, uint32_t *n_color) {
 }
 
 // direct mode 
-uint32_t (dir_mode) (unsigned row, unsigned col, uint8_t step, uint32_t first) {
+uint32_t (dir_mode) (unsigned col, unsigned row, uint8_t step, uint32_t first) {
     uint32_t r = ((((1 << mode_info.RedMaskSize) - 1) & (first >> mode_info.RedFieldPosition)) + col * step) % (1 << mode_info.RedMaskSize);
     uint32_t g = ((((1 << mode_info.GreenMaskSize) - 1) & (first >> mode_info.GreenFieldPosition)) + row * step) % (1 << mode_info.GreenMaskSize);
     uint32_t b = ((((1 << mode_info.BlueMaskSize) - 1) & (first >> mode_info.BlueFieldPosition)) + (col + row) * step) % (1 << mode_info.BlueMaskSize);
@@ -85,7 +85,7 @@ uint32_t (dir_mode) (unsigned row, unsigned col, uint8_t step, uint32_t first) {
 }
 
 // indexed mode
-uint32_t (idx_mode) (unsigned row, unsigned col, uint8_t step, uint32_t first, uint8_t no_rectangles) {
+uint32_t (idx_mode) (unsigned col, unsigned row, uint8_t step, uint32_t first, uint8_t no_rectangles) {
     return ((first + (row * no_rectangles + col) * step) % (1 << mode_info.BitsPerPixel));
 }
 

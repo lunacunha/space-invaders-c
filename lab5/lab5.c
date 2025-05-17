@@ -131,7 +131,6 @@ int(video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, ui
 
 int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
   uint16_t mode = 0x105; // indexed mode only
-  
   if (set_frame_buffer(mode) != 0) return 1;
   if (set_graphical_mode(mode) != 0) return 1;
   if (print_xpm(xpm, x, y) != 0) return 1;
@@ -142,11 +141,90 @@ int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
 
 int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint16_t yf,
                      int16_t speed, uint8_t fr_rate) {
-  /* To be completed */
-  printf("%s(%8p, %u, %u, %u, %u, %d, %u): under construction\n",
-         __func__, xpm, xi, yi, xf, yf, speed, fr_rate);
 
-  return 1;
+  int ipc_st;
+  message msg;
+  uint8_t irq_keyboard;
+  uint8_t irq_timer;
+  uint8_t horizontal;
+
+  if (xi < xf && yi == yf) horizontal = 1; 
+  else if (xi == xf && yi < yf) horizontal = 0;
+  else return 1;
+
+  // Subscribing keyboard and timer interruptions
+  if (kb_subscribe_int(&irq_keyboard) != 0) {
+    printf("Error subscribing keyboard\n");
+    return 1;
+  }
+
+  if (timer_subscribe_int(&irq_timer) != 0) {
+    printf("Error subscribing timer\n");
+    return 1;
+  }
+
+  uint16_t mode = 0x105; // indexed mode only
+
+  if (set_frame_buffer(mode) != 0) return 1;
+  if (set_graphical_mode(mode) != 0) return 1;
+  
+  // set timer frequency
+  if (timer_set_frequency(0, fr_rate) != 0) return 1;
+
+  // xpm initial position
+  if (print_xpm(xpm, xi, yi) != 0) return 1;
+
+
+  // handle interruption
+  while (scancode != KB_BREAK_ESC && (xi < xf || yi < yf)) {
+    if (driver_receive(ANY, &msg, &ipc_st)) {   
+      printf("Error: driver_receive failed with: %d", ipc_st);
+      continue;
+    }
+  
+    if (is_ipc_notify(ipc_st)) {  
+      switch (_ENDPOINT_P(msg.m_source)) {
+        case HARDWARE:  
+          if (msg.m_notify.interrupts & BIT(irq_keyboard)) {   // check keyboard interruption
+            kbc_ih();   
+            break;
+          }   
+
+          if (msg.m_notify.interrupts & BIT(irq_timer)) {   // Check timer interruption
+            
+            if (horizontal==1) {
+              xi += speed;
+              if(xi < xf) xi = xf;
+            }
+            else {
+              yi += speed;
+              if (yi < yf) yi = yf;
+            }
+
+
+            // print the xpm in the new position
+            if(print_xpm(xpm, xi, yi) != 0) {
+              printf("Error printing new xpm");
+              return 1;
+            }
+                       
+            break;
+          }  
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  // Leave graphic mode
+  if (vg_exit() != 0) return 1;
+
+  // Unsubscrive interruptions
+  if (timer_unsubscribe_int() != 0) return 1;
+  if (kb_unsubscribe_int() != 0) return 1;
+
+  return 0;
 }
 
 int(video_test_controller)() {
