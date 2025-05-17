@@ -19,11 +19,11 @@ int main(int argc, char *argv[]) {
 
   // enables to log function invocations that are being "wrapped" by LCF
   // [comment this out if you don't want/need it]
-  lcf_trace_calls("/home/lcom/labs/lab5/trace.txt");
+  lcf_trace_calls("/home/lcom/labs/grupo_2leic08_3/lab5/trace.txt");
 
   // enables to save the output of printf function calls on a file
   // [comment this out if you don't want/need it]
-  lcf_log_output("/home/lcom/labs/lab5/output.txt");
+  lcf_log_output("/home/lcom/labs/grupo_2leic08_3/lab5/output.txt");
 
   // handles control over to LCF
   // [LCF handles command line arguments and invokes the right function]
@@ -150,10 +150,12 @@ int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint1
 
   if (xi < xf && yi == yf) horizontal = 1; 
   else if (xi == xf && yi < yf) horizontal = 0;
-  else return 1;
-
+  else {
+    printf("Invalid");
+    return 1;
+  }
   // Subscribing keyboard and timer interruptions
-  if (kb_subscribe_int(&irq_keyboard) != 0) {
+  if ((kb_subscribe_int)(&irq_keyboard) != 0) {
     printf("Error subscribing keyboard\n");
     return 1;
   }
@@ -186,38 +188,34 @@ int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint1
       switch (_ENDPOINT_P(msg.m_source)) {
         case HARDWARE:  
           if (msg.m_notify.interrupts & BIT(irq_keyboard)) {   // check keyboard interruption
+            printf("keyboard int");
             kbc_ih();   
-            break;
           }   
 
           if (msg.m_notify.interrupts & BIT(irq_timer)) {   // Check timer interruption
-            
-            if (horizontal==1) {
+
+            if (horizontal) {
               xi += speed;
-              if(xi < xf) xi = xf;
+              if(xi > xf) xi = xf;
             }
+
             else {
               yi += speed;
-              if (yi < yf) yi = yf;
+              if (yi > yf) yi = yf;
             }
-
-
+            
             // print the xpm in the new position
             if(print_xpm(xpm, xi, yi) != 0) {
               printf("Error printing new xpm");
               return 1;
-            }
-                       
-            break;
+            }           
+                     
           }  
-          break;
-        default:
-          break;
       }
     }
   }
 
-  // Leave graphic mode
+  // Exit graphic mode
   if (vg_exit() != 0) return 1;
 
   // Unsubscrive interruptions
