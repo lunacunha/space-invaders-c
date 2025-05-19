@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "controllers/keyboard/kb_interrupts.h"
+#include "controllers/graphics/graphic.h"
 
 #define TIMER 0
 #define FREQ 60
@@ -34,8 +35,46 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
+int (waiting_ESC)() {
+    int ipc_st;
+    uint8_t irq_set;
+    message msg;
+
+    if ((kb_subscribe_int)(&irq_set)) {
+        printf("Error subscribing keyboard\n");
+        return 1;
+    }
+
+    while (scancode != KB_BREAK_ESC) {
+        if (driver_receive(ANY, &msg, &ipc_st)) {   // Receber a mensagem
+        printf("Error: driver_receive failed with: %d", ipc_st);
+        continue;
+        }
+    
+        if (is_ipc_notify(ipc_st)) {  // Verificar se a mensagem é uma notificação
+        switch (_ENDPOINT_P(msg.m_source)) {
+            case HARDWARE:  
+            if (msg.m_notify.interrupts & BIT(irq_set)) {   // Verificar se a interrupção é do teclado
+                kbc_ih();   // Tratar a interrupção
+                break;
+            }   
+            break;
+            default:
+            break;
+        }
+        }
+    }
+    if ((kb_unsubscribe_int)()) {
+        printf("Error unsubscribing keyboard\n");
+        return 1;
+    }
+    
+    return 0;
+}
+
 
 int (proj_main_loop)(int argc, char *argv[]){
+    /* // Test keyboard and timer
     // Set timer frequency
     if (timer_set_frequency(TIMER, FREQ)) return 1;
 
@@ -101,7 +140,28 @@ int (proj_main_loop)(int argc, char *argv[]){
     if ((timer_unsubscribe_int)()) {  // timer
         printf("Error unsubscribing timer\n");
         return 1;
-    }
+    }*/
+
+    // Test graphics with this parameters
+    uint16_t mode = 0x105;
+    uint16_t x = 20;
+    uint16_t y = 20;
+    uint16_t width = 100;
+    uint16_t height = 150;
+    uint32_t color = 0x13;
+
+    if (set_frame_buffer(mode)) return 1;   
+
+    if (set_graphical_mode(mode)) return 1;
+
+    uint32_t n_color;
+    if (norm_color(color, &n_color)) return 1;
+
+    if (vg_draw_rectangle(x, y, width, height, n_color)) return 1;
+    
+    if (waiting_ESC()) return 1;
+
+    if (vg_exit()) return 1;
 
     return 0;
 }

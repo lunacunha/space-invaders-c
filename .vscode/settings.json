@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "stdint.h": "c",
-        "kb_interrupts.h": "c"
+        "kb_interrupts.h": "c",
+        "lcf.h": "c"
     }
 }
