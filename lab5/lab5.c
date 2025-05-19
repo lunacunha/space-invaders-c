@@ -19,11 +19,11 @@ int main(int argc, char *argv[]) {
 
   // enables to log function invocations that are being "wrapped" by LCF
   // [comment this out if you don't want/need it]
-  lcf_trace_calls("/home/lcom/labs/grupo_2leic08_3/lab5/trace.txt");
+  lcf_trace_calls("/home/lcom/labs/lab5/trace.txt");
 
   // enables to save the output of printf function calls on a file
   // [comment this out if you don't want/need it]
-  lcf_log_output("/home/lcom/labs/grupo_2leic08_3/lab5/output.txt");
+  lcf_log_output("/home/lcom/labs/lab5/output.txt");
 
   // handles control over to LCF
   // [LCF handles command line arguments and invokes the right function]
