@@ -2,6 +2,10 @@
     "files.associations": {
         "stdint.h": "c",
         "kb_interrupts.h": "c",
-        "lcf.h": "c"
+        "lcf.h": "c",
+        "xpm.h": "c",
+        "pixmap.h": "c",
+        "letter_char.h": "c",
+        "options.h": "c"
     }
 }

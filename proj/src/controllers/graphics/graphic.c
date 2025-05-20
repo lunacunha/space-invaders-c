@@ -91,11 +91,10 @@ uint32_t (idx_mode) (unsigned col, unsigned row, uint8_t step, uint32_t first, u
 
 int (print_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
     xpm_image_t image;
-    uint8_t *color = xpm_load(xpm, XPM_INDEXED, &image);
+    uint32_t *colors = (uint32_t *) xpm_load(xpm, XPM_8_8_8_8, &image);
     for (int h = 0; h < image.height; h++) {
         for (int w = 0; w < image.width; w++) {
-            if (vg_draw_pixel(w+x, h+y, *color) != 0) return 1;
-            color++;
+            if (vg_draw_pixel(w+x, h+y, colors[h*image.width + w]) != 0) return 1;
         }
     }
     return 0;
