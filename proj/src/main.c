@@ -15,6 +15,15 @@
 
 #define TIMER 0
 #define FREQ 60
+#define MAX_BULLETS 10 
+
+typedef struct {
+    int x;         
+    int y;          
+    bool active;    
+} Bullet;
+
+Bullet bullets[MAX_BULLETS];
 
 extern uint8_t scancode;
 extern int timer_counter;
@@ -23,11 +32,11 @@ extern vbe_mode_info_t mode_info;
 // With characters test
 /*static xpm_map_t letters[] = {
     A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z
-};*/
+};
 
 static xpm_map_t numbers_spc[] = {
     n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, point, points, bar, sub
-};
+};*/
 
 int main(int argc, char *argv[]) {
     // sets the language of LCF messages (can be either EN-US or PT-PT)
@@ -94,11 +103,18 @@ int (waiting_ESC)() {
 int (proj_main_loop)(int argc, char *argv[]) {
 
     if (timer_set_frequency(TIMER, FREQ)) return 1;
-    int time_elapsed = 0;
-    int n = 10;
+    //int time_elapsed = 0;
+    //int n = 10;
 
     uint16_t mode = 0x14C;
     uint16_t x = 350;
+    int prev_x = x; 
+    int ship_width = 50; 
+    int ship_height = 50;
+    int bullet_width = 50;
+    int bullet_height = 30;
+
+
     if (set_frame_buffer(mode)) return 1;   
     if (set_graphical_mode(mode)) return 1;
     if (print_xpm(ship, x, 600) != 0) return 1;
@@ -117,7 +133,11 @@ int (proj_main_loop)(int argc, char *argv[]) {
         return 1;
     }
 
-    while (scancode != KB_BREAK_ESC && time_elapsed < n) {
+    for (int i = 0; i < MAX_BULLETS; i++) {
+        bullets[i].active = false;
+    }
+
+    while (scancode != KB_BREAK_ESC) {
         if (driver_receive(ANY, &msg, &ipc_st)) {   
             printf("Error: driver_receive failed with: %d", ipc_st);
             continue;
@@ -130,39 +150,89 @@ int (proj_main_loop)(int argc, char *argv[]) {
                         kbc_ih();   
 
                         bool is_break = scancode & KB_BREAK_CODE; 
-                        int size = (scancode == KB_TWO_BYTES) ? 2 : 1;   
+                        //int size = (scancode == KB_TWO_BYTES) ? 2 : 1;   
 
-                        (kbd_print_scancode)(is_break, size, &scancode); 
+                        //(kbd_print_scancode)(is_break, size, &scancode); 
 
                         if (!is_break) { 
                             if (scancode == 0x1e) { // 'A' key (make code)
-                                x -= 30; // Mover para a esquerda
-                                if (vg_draw_rectangle(0, 0, mode_info.XResolution, mode_info.YResolution, 0x000000)) return 1;
-                                if (print_xpm(ship, x, 600) != 0) return 1;
+                                if (x > ship_width) { 
+                                    x -= 30; 
+                                }
+                                printf("Left key pressed, x: %d\n", x);
+
                             } 
                             else if (scancode == 0x20) { // 'D' key (make code)
-                                x += 30; // Mover para a direita
-                                if (vg_draw_rectangle(0, 0, mode_info.XResolution, mode_info.YResolution, 0x000000)) return 1;
-                                if (print_xpm(ship, x, 600) != 0) return 1; 
+                                x += 30;
+                                if (x > mode_info.XResolution - ship_width) { 
+                                    x = mode_info.XResolution - ship_width;
+                                }
+
+                            } 
+                            else if (scancode == 0x39) {
+                                for (int i = 0; i < MAX_BULLETS; i++) {
+                                    if (!bullets[i].active) { 
+                                        bullets[i].x = x;    
+                                        bullets[i].y = 570;   
+                                        bullets[i].active = true;
+                                        break;
+                                    }
+                                }
                             }
                         }
-
-                        time_elapsed = 0;
                     }
 
                     if (msg.m_notify.interrupts & BIT(irq_set_timer)) {   
                         timer_int_handler();  
 
-                        if (timer_counter % 60 == 0) {
-                            if (print_xpm(numbers_spc[9 - time_elapsed], 100, 100)) return 1; 
-                            time_elapsed++;
-                        }
-                    }
+                        for (int i = 0; i < MAX_BULLETS; i++) {
+                            if (bullets[i].active) {
+                                // Limpar a posição anterior da bala
+                                vg_draw_rectangle(bullets[i].x, bullets[i].y, bullet_width, bullet_height, 0x000000);
 
+                                // Atualizar a posição da bala
+                                bullets[i].y -= 10;
+
+                                // Desativar a bala se sair da tela
+                                if (bullets[i].y < 0) { 
+                                    bullets[i].active = false;
+                                } else {
+                                    // Redesenhar a bala na nova posição
+                                    if (print_xpm(bullet, bullets[i].x, bullets[i].y) != 0) {
+                                        printf("Error drawing bullet\n");
+                                        return 1;
+                                    }
+                                }
+                            }
+                        }
+                        
+                    }
                     break;
 
                 default:
                     break;
+            }
+        }
+
+        // Limpar apenas a área onde a nave estava antes
+        if (prev_x != x) { // Apenas limpe e redesenhe se a posição mudou
+            vg_draw_rectangle(prev_x, 600, ship_width, ship_height, 0x000000);
+            prev_x = x;
+        }
+
+        // Redesenhar a nave na nova posição
+        if (print_xpm(ship, x, 600) != 0) {
+            printf("Error: failed to draw ship\n");
+            return 1;
+        }
+
+        // Desenhar balas
+        for (int i = 0; i < MAX_BULLETS; i++) {
+            if (bullets[i].active) {
+                if (print_xpm(bullet, bullets[i].x, bullets[i].y) != 0) {
+                    printf("Error drawing bullet\n");
+                    return 1;
+                }
             }
         }
 

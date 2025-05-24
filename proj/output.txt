@@ -1,15 +1,65 @@
-Makecode: 0x9c
-Breakcode: 0x20
-Makecode: 0xa0
-Breakcode: 0x21
-Makecode: 0xa1
-Breakcode: 0x20
-Makecode: 0xa0
-Breakcode: 0x20
-Makecode: 0xa0
-Breakcode: 0x20
-Makecode: 0xa0
-Breakcode: 0x20
-Makecode: 0xa0
-Breakcode: 0x01
-Makecode: 0x81
+Left key pressed, x: 320
+Left key pressed, x: 290
+Left key pressed, x: 260
+Left key pressed, x: 230
+Left key pressed, x: 200
+Left key pressed, x: 170
+Left key pressed, x: 140
+Left key pressed, x: 110
+Left key pressed, x: 80
+Left key pressed, x: 50
+Left key pressed, x: 50
+Left key pressed, x: 50
+Left key pressed, x: 50
+Left key pressed, x: 50
+Left key pressed, x: 1072
+Left key pressed, x: 1042
+Left key pressed, x: 1072
+Left key pressed, x: 1042
+Left key pressed, x: 1012
+Left key pressed, x: 982
+Left key pressed, x: 952
+Left key pressed, x: 922
+Left key pressed, x: 892
+Left key pressed, x: 862
+Left key pressed, x: 832
+Left key pressed, x: 802
+Left key pressed, x: 772
+Left key pressed, x: 742
+Left key pressed, x: 712
+Left key pressed, x: 682
+Left key pressed, x: 652
+Left key pressed, x: 622
+Left key pressed, x: 592
+Left key pressed, x: 562
+Left key pressed, x: 532
+Left key pressed, x: 502
+Left key pressed, x: 472
+Left key pressed, x: 442
+Left key pressed, x: 412
+Left key pressed, x: 382
+Left key pressed, x: 352
+Left key pressed, x: 322
+Left key pressed, x: 292
+Left key pressed, x: 262
+Left key pressed, x: 232
+Left key pressed, x: 202
+Left key pressed, x: 172
+Left key pressed, x: 142
+Left key pressed, x: 112
+Left key pressed, x: 82
+Left key pressed, x: 52
+Left key pressed, x: 22
+Left key pressed, x: 22
+Left key pressed, x: 22
+Left key pressed, x: 22
+Left key pressed, x: 22
+Left key pressed, x: 22
+Left key pressed, x: 22
+Left key pressed, x: 22
+Left key pressed, x: 22
+Left key pressed, x: 22
+Left key pressed, x: 22
+Left key pressed, x: 22
+Left key pressed, x: 22
+Left key pressed, x: 22
