@@ -11,7 +11,7 @@
 
 #define KB_BREAK_ESC 0x81
 #define KB_TWO_BYTES 0xE0
-#define KB_MAKE_CODE BIT(7)
+#define KB_BREAK_CODE BIT(7)
 
 #define IN_BUFFER_FULL BIT(1)
 

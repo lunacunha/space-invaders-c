@@ -18,15 +18,16 @@
 
 extern uint8_t scancode;
 extern int timer_counter;
+extern vbe_mode_info_t mode_info;
 
 // With characters test
 /*static xpm_map_t letters[] = {
     A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z
-};
+};*/
 
 static xpm_map_t numbers_spc[] = {
     n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, point, points, bar, sub
-};*/
+};
 
 int main(int argc, char *argv[]) {
     // sets the language of LCF messages (can be either EN-US or PT-PT)
@@ -90,20 +91,23 @@ int (waiting_ESC)() {
 }
 
 
-int (proj_main_loop)(int argc, char *argv[]){
-    // ------------- Test keyboard and timer -------------------------
-    /* 
-    // Set timer frequency
+int (proj_main_loop)(int argc, char *argv[]) {
+
     if (timer_set_frequency(TIMER, FREQ)) return 1;
+    int time_elapsed = 0;
+    int n = 10;
+
+    uint16_t mode = 0x14C;
+    uint16_t x = 350;
+    if (set_frame_buffer(mode)) return 1;   
+    if (set_graphical_mode(mode)) return 1;
+    if (print_xpm(ship, x, 600) != 0) return 1;
 
     int ipc_st;
     uint8_t irq_set_keyboard, irq_set_timer;
     message msg;
-    int time_elapsed = 0;
-    int n = 10;
 
-    // Subscrever as interrupções
-    if ((kb_subscribe_int)(&irq_set_keyboard)) {  // teclado
+    if ((kb_subscribe_int)(&irq_set_keyboard)) {  
         printf("Error subscribing keyboard\n");
         return 1;
     }
@@ -113,114 +117,69 @@ int (proj_main_loop)(int argc, char *argv[]){
         return 1;
     }
 
-    // Ciclo de interrupções
     while (scancode != KB_BREAK_ESC && time_elapsed < n) {
-        if (driver_receive(ANY, &msg, &ipc_st)) {   // Receber a mensagem
-        printf("Error: driver_receive failed with: %d", ipc_st);
-        continue;
+        if (driver_receive(ANY, &msg, &ipc_st)) {   
+            printf("Error: driver_receive failed with: %d", ipc_st);
+            continue;
         }
 
-        if (is_ipc_notify(ipc_st)) {  // Verificar se a mensagem é uma notificação
-        switch (_ENDPOINT_P(msg.m_source)) {
-            case HARDWARE:  
-            if (msg.m_notify.interrupts & BIT(irq_set_keyboard)) {   // Verificar se a interrupção é do teclado
-                kbc_ih();   // Tratar a interrupção
+        if (is_ipc_notify(ipc_st)) {  
+            switch (_ENDPOINT_P(msg.m_source)) {
+                case HARDWARE:  
+                    if (msg.m_notify.interrupts & BIT(irq_set_keyboard)) {  
+                        kbc_ih();   
 
-                bool is_break = !(scancode & KB_MAKE_CODE);  // Verificar se é um break code
-                int size = (scancode == KB_TWO_BYTES) ? 2 : 1;   // Verificar o tamanho do scancode
+                        bool is_break = scancode & KB_BREAK_CODE; 
+                        int size = (scancode == KB_TWO_BYTES) ? 2 : 1;   
 
-                (kbd_print_scancode)(is_break, size, &scancode);  // Imprimir o scancode
+                        (kbd_print_scancode)(is_break, size, &scancode); 
 
-                time_elapsed = 0;  // Resetar o tempo
+                        if (!is_break) { 
+                            if (scancode == 0x1e) { // 'A' key (make code)
+                                x -= 30; // Mover para a esquerda
+                                if (vg_draw_rectangle(0, 0, mode_info.XResolution, mode_info.YResolution, 0x000000)) return 1;
+                                if (print_xpm(ship, x, 600) != 0) return 1;
+                            } 
+                            else if (scancode == 0x20) { // 'D' key (make code)
+                                x += 30; // Mover para a direita
+                                if (vg_draw_rectangle(0, 0, mode_info.XResolution, mode_info.YResolution, 0x000000)) return 1;
+                                if (print_xpm(ship, x, 600) != 0) return 1; 
+                            }
+                        }
+
+                        time_elapsed = 0;
+                    }
+
+                    if (msg.m_notify.interrupts & BIT(irq_set_timer)) {   
+                        timer_int_handler();  
+
+                        if (timer_counter % 60 == 0) {
+                            if (print_xpm(numbers_spc[9 - time_elapsed], 100, 100)) return 1; 
+                            time_elapsed++;
+                        }
+                    }
+
+                    break;
+
+                default:
+                    break;
             }
-
-            if (msg.m_notify.interrupts & BIT(irq_set_timer)) {   // Verificar se a interrupção é do timer
-                timer_int_handler();  // Incrementar o contador de interrupções do timer
-
-                if (timer_counter % 60 == 0) {
-                time_elapsed++;  // Incrementar o tempo
-                printf("Time elapsed: %d\n", time_elapsed);
-                }
-            }
-            break;
-            default:
-            break;
         }
-        }
+
     }
 
-    // Cancelar a subscrição das interrupções
-    if ((kb_unsubscribe_int)()) {  // teclado
+
+    if ((kb_unsubscribe_int)()) { 
         printf("Error unsubscribing keyboard\n");
         return 1;
     }
 
-    if ((timer_unsubscribe_int)()) {  // timer
+    if ((timer_unsubscribe_int)()) { 
         printf("Error unsubscribing timer\n");
         return 1;
-    }*/
-
-
-    // -------------- Test Graphics with Sprites -----------------------
-
-    // Initial Parameters 
-    uint16_t mode = 0x14C;
-    uint16_t x = 350;
-    uint16_t y = 50;
-
-    if (set_frame_buffer(mode)) return 1;   
-
-    if (set_graphical_mode(mode)) return 1;
-
-
-    // Test Rectangle 
-    /*
-    uint16_t width = 100;
-    uint16_t height = 150;
-    uint32_t color = 0x13;
-    uint32_t n_color;
-    if (norm_color(color, &n_color)) return 1;
-
-    if (vg_draw_rectangle(x, y, width, height, n_color)) return 1;*/
-
-
-    // Test menu 
-    if (print_xpm(title, x, y) != 0) return 1;
-    x += 100;
-    if (print_xpm(start2, x, 400) != 0) return 1;
-    if (print_xpm(scores1, x, 500) != 0) return 1;
-    if (print_xpm(quit1, x, 600) != 0) return 1;
-
-
-    //  Test Characters 
-    /*for (int i = 0; i < 26; i++) {
-        if (print_xpm(letters[i], x + i * 25, 500) != 0) return 1;
     }
-    for (int j = 0; j < 14; j++) {
-        if (print_xpm(numbers_spc[j], x + j * 25, 600) != 0) return 1;
-    }*/
 
-
-    // Test game 
-    /*if (print_xpm(Alien1, x + 100, 500) != 0) return 1;
-    if (print_xpm(Alien2, x + 200, 500) != 0) return 1;
-    if (print_xpm(Alien3, x + 300, 500) != 0) return 1;
-    if (print_xpm(Alien4, x + 400, 500) != 0) return 1;
-
-    if (print_xpm(ship, x + 100, 600) != 0) return 1;
-    if (print_xpm(bullet, x + 200, 600) != 0) return 1;
-    if (print_xpm(enemy_bullet, x + 300, 600) != 0) return 1;*/
-
-
-    //  Test messages 
-    /*if (print_xpm(message1, x, 400) != 0) return 1;
-    if (print_xpm(message2, x, 450) != 0) return 1;
-    if (print_xpm(message3, x, 500) != 0) return 1;
-    if (print_xpm(message4, x, 550) != 0) return 1;
-    if (print_xpm(message5, x, 600) != 0) return 1;*/
-
-
-    if (waiting_ESC()) return 1;
+    //if (waiting_ESC()) return 1;
 
     if (vg_exit()) return 1;
 
