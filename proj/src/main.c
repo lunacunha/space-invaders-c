@@ -14,6 +14,7 @@
 #include "xpm/messages.h"
 #include "confs.h"
 #include "game/ship/ship.h"
+#include "game/game_state.h"
 
 #define TIMER 0
 #define FREQ 60
@@ -78,50 +79,11 @@ int close_game() {
 }
 
 
-int player_game_loop(uint16_t x) {
-    int ipc_st;
-    message msg;
-
-    while (scancode != KB_BREAK_ESC) {
-        if (driver_receive(ANY, &msg, &ipc_st)) {   
-            printf("Error: driver_receive failed with: %d", ipc_st);
-            continue;
-        }
-
-        if (is_ipc_notify(ipc_st)) {  
-            switch (_ENDPOINT_P(msg.m_source)) {
-                case HARDWARE:  
-                    // keyboard
-                    if (msg.m_notify.interrupts & BIT(irq_set_keyboard)) {  
-                        kbc_ih();   
-
-                        bool is_break = scancode & KB_BREAK_CODE; 
-
-                        if (!is_break) { 
-                            ship_action(scancode, mode_info);
-                        }
-                    }
-                    // timer
-                    if (msg.m_notify.interrupts & BIT(irq_set_timer)) {   
-                        timer_int_handler();  
-                        shoot_bullets();
-                        
-                    }
-                    break;
-
-                default:
-                    break;
-            }
-        }
-
-    }
-    return 0;
-}
-
 int (proj_main_loop)(int argc, char *argv[]) {
     if (init_game() != 0) return close_game();
     if (draw_ship(x) != 0) return 1;
     init_bullets();
-    if (player_game_loop(x) != 0) return 1;
+    init_enemies();
+    if (game_state() != 0) return 1;
     return close_game();
 }
