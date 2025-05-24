@@ -12,6 +12,7 @@
 #include "xpm/game/player.h"
 #include "xpm/game/aliens.h"
 #include "xpm/messages.h"
+#include "confs.h"
 
 #define TIMER 0
 #define FREQ 60
@@ -28,6 +29,8 @@ Bullet bullets[MAX_BULLETS];
 extern uint8_t scancode;
 extern int timer_counter;
 extern vbe_mode_info_t mode_info;
+uint8_t irq_set_keyboard, irq_set_timer;
+
 
 // With characters test
 /*static xpm_map_t letters[] = {
@@ -99,39 +102,36 @@ int (waiting_ESC)() {
     return 0;
 }
 
-
-int (proj_main_loop)(int argc, char *argv[]) {
-
+int init_game() {
     if (timer_set_frequency(TIMER, FREQ)) return 1;
-    //int time_elapsed = 0;
-    //int n = 10;
+    if (set_frame_buffer(MODE)) return 1;   
+    if (set_graphical_mode(MODE)) return 1;
+    if ((kb_subscribe_int)(&irq_set_keyboard)) return 1;
+    if ((timer_subscribe_int)(&irq_set_timer)) return 1;
+    return 0;
+}
 
-    uint16_t mode = 0x14C;
-    uint16_t x = 350;
+int close_game() {
+    if (vg_exit()) return 1;
+    if ((kb_unsubscribe_int)()) return 1;
+    if ((timer_unsubscribe_int)()) return 1;
+    return 0;
+}
+
+int draw_ship(uint16_t x) {
+    if (print_xpm(ship, x, 600) != 0) return 1;
+    return 0;
+}
+
+int player_game_loop(uint16_t x) {
     int prev_x = x; 
     int ship_width = 50; 
     int ship_height = 50;
     int bullet_width = 50;
     int bullet_height = 30;
 
-
-    if (set_frame_buffer(mode)) return 1;   
-    if (set_graphical_mode(mode)) return 1;
-    if (print_xpm(ship, x, 600) != 0) return 1;
-
     int ipc_st;
-    uint8_t irq_set_keyboard, irq_set_timer;
     message msg;
-
-    if ((kb_subscribe_int)(&irq_set_keyboard)) {  
-        printf("Error subscribing keyboard\n");
-        return 1;
-    }
-
-    if ((timer_subscribe_int)(&irq_set_timer)) {  // timer
-        printf("Error subscribing timer\n");
-        return 1;
-    }
 
     for (int i = 0; i < MAX_BULLETS; i++) {
         bullets[i].active = false;
@@ -147,6 +147,7 @@ int (proj_main_loop)(int argc, char *argv[]) {
             switch (_ENDPOINT_P(msg.m_source)) {
                 case HARDWARE:  
                     if (msg.m_notify.interrupts & BIT(irq_set_keyboard)) {  
+                        keyboard_change();
                         kbc_ih();   
 
                         bool is_break = scancode & KB_BREAK_CODE; 
@@ -221,10 +222,7 @@ int (proj_main_loop)(int argc, char *argv[]) {
         }
 
         // Redesenhar a nave na nova posição
-        if (print_xpm(ship, x, 600) != 0) {
-            printf("Error: failed to draw ship\n");
-            return 1;
-        }
+        if(draw_ship(prev_x)) return 1;
 
         // Desenhar balas
         for (int i = 0; i < MAX_BULLETS; i++) {
@@ -237,21 +235,18 @@ int (proj_main_loop)(int argc, char *argv[]) {
         }
 
     }
-
-
-    if ((kb_unsubscribe_int)()) { 
-        printf("Error unsubscribing keyboard\n");
-        return 1;
-    }
-
-    if ((timer_unsubscribe_int)()) { 
-        printf("Error unsubscribing timer\n");
-        return 1;
-    }
-
-    //if (waiting_ESC()) return 1;
-
-    if (vg_exit()) return 1;
-
     return 0;
+}
+
+int (proj_main_loop)(int argc, char *argv[]) {
+
+    //int time_elapsed = 0;
+    //int n = 10;   
+    uint16_t x = 350;
+
+    if (init_game() != 0) return close_game();
+    if (draw_ship(x) != 0) return 1;
+    if (player_game_loop(x) != 0) return 1;
+    //if (waiting_ESC()) return 1;
+    return close_game();
 }
