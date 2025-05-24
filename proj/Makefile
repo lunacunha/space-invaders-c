@@ -5,9 +5,11 @@ PROG=proj
 .PATH: ${.CURDIR}/src/controllers/timer
 .PATH: ${.CURDIR}/src/controllers/keyboard
 .PATH: ${.CURDIR}/src/controllers/graphics
+.PATH: ${.CURDIR}/src/game/ship
+
 
 # source code files to be compiled
-SRCS = utils.c timer.c kb_controller.c kb_interrupts.c graphic.c main.c
+SRCS = utils.c timer.c kb_controller.c kb_interrupts.c graphic.c main.c ship.c
 
 # additional compilation flags
 # "-Wall -Wextra -Werror -I . -std=c11 -Wno-unused-parameter" are already set
