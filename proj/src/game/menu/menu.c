@@ -81,7 +81,7 @@ void menu_render() {
             break;
             
         case MENU_SCORES:
-            print_xpm(score_board, 0, 0);
+            //print_xpm(score_board, 0, 0);
             break;
             
         case MENU_QUIT:
@@ -97,3 +97,7 @@ MenuState menu_get_state() {
     return current_state;
 }
 
+void menu_set_state(MenuState state) {
+    current_state = state;
+    option_selected = false;
+}

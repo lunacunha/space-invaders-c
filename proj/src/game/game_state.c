@@ -73,7 +73,10 @@ int game_state() {
                         enemies_moving();
                         check_bullet_enemy_collision();
                         if (count_active_enemies() == 0) {
-                            printf("All enemies destroyed! You win!\n");
+                            if (vg_draw_rectangle(0, 0, mode_info.XResolution, mode_info.YResolution, 0x000000)) return 1;
+
+                            menu_set_state(MENU_SCORES);
+                            return 0;
                         }
                     }
                     break;
@@ -88,5 +91,6 @@ int game_state() {
         }
 
     }
+    menu_set_state(MENU_MAIN);
     return 0;
 }

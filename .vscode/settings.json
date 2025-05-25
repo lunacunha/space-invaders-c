@@ -12,6 +12,7 @@
         "special_char.h": "c",
         "stdbool.h": "c",
         "locale": "c",
-        "string": "c"
+        "string": "c",
+        "menu.h": "c"
     }
 }

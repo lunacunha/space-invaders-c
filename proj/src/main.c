@@ -16,6 +16,7 @@
 #include "game/ship/ship.h"
 #include "game/game_state.h"
 #include "game/menu/menu.h"
+#include "game/scores/score.h"
 
 #define TIMER 0
 #define FREQ 60
@@ -74,9 +75,9 @@ int init_game() {
 }
 
 int close_game() {
-    if (vg_exit()) return 1;
     if ((kb_unsubscribe_int)()) return 1;
     if ((timer_unsubscribe_int)()) return 1;
+    if (vg_exit()) return 1;
     return 0;
 }
 
@@ -108,8 +109,19 @@ int menu_handler() {
                             init_bullets();
                             init_enemies();
                             if (game_state() != 0) return 1;
+                        } else if (state == MENU_SCORES) {
+                            //This state is for score state and for intermediates states where the player use a enter to continue
+                            if (vg_draw_rectangle(0, 0, mode_info.XResolution, mode_info.YResolution, 0x000000)) return 1;
+                            if (print_xpm(score_board, 0, 0)) return 1;
+                            if (print_xpm(message3, 400, 300)) return 1;
+                            if (print_xpm(message2, 300, 400)) return 1;
+                            if (print_xpm(message1, 300, 500)) return 1;
+                            if (score_state() != 0) return 1;
+
+                            if (vg_draw_rectangle(0, 0, mode_info.XResolution, mode_info.YResolution, 0x000000)) return 1;
+                            menu_set_state(MENU_MAIN);
                         } else if (state == MENU_EXIT) {
-                            return close_game();
+                            return 0;
                         } else {
                             menu_render();
                         }
@@ -125,7 +137,7 @@ int menu_handler() {
 
 
 int (proj_main_loop)(int argc, char *argv[]) {
-    if (init_game() != 0) return close_game();
+    if (init_game() != 0) return 1;
     if (menu_handler() != 0) return 1;
     return close_game();
 }

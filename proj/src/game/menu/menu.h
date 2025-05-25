@@ -40,6 +40,6 @@ void (menu_handle_input)();
 void (menu_render)();
 MenuState (menu_get_state)();
 
-
+void (menu_set_state)(MenuState state);
 
 #endif
