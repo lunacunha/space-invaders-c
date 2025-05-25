@@ -1,0 +1,33 @@
+Enemy hit!
+Left key pressed, x: 500
+Left key pressed, x: 470
+Left key pressed, x: 440
+Enemy hit!
+Enemy hit!
+Left key pressed, x: 410
+Left key pressed, x: 380
+Enemy hit!
+Left key pressed, x: 350
+Left key pressed, x: 320
+Enemy hit!
+Left key pressed, x: 290
+Enemy hit!
+Left key pressed, x: 260
+Left key pressed, x: 230
+Left key pressed, x: 290
+Left key pressed, x: 260
+Enemy hit!
+Left key pressed, x: 230
+Enemy hit!
+Enemy hit!
+Enemy hit!
+Enemy hit!
+Enemy hit!
+Left key pressed, x: 530
+Enemy hit!
+Left key pressed, x: 500
+Left key pressed, x: 470
+Left key pressed, x: 440
+Left key pressed, x: 410
+Enemy hit!
+Enemy hit!

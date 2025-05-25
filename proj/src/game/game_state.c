@@ -6,6 +6,9 @@ extern uint8_t scancode;
 extern uint8_t irq_set_keyboard, irq_set_timer;
 extern int enemy_move_timer;
 
+bool player_win = false;
+bool player_lost = false;
+
 // Check collision between bullet and enemies
 int check_bullet_enemy_collision() {
     for (int i = 0; i < MAX_BULLETS; i++) {
@@ -75,6 +78,7 @@ int game_state() {
                         if (count_active_enemies() == 0) {
                             if (vg_draw_rectangle(0, 0, mode_info.XResolution, mode_info.YResolution, 0x000000)) return 1;
 
+                            player_win = true;
                             menu_set_state(MENU_SCORES);
                             return 0;
                         }
