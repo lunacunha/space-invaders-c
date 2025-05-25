@@ -15,6 +15,7 @@ int (set_graphical_mode)(uint16_t mode) {
 }
 
 uint8_t *video_mem; /* frame-buffer VM address (static global variable) */ 
+uint8_t *back_buf;
 vbe_mode_info_t mode_info;
 unsigned int vram_size;
 
@@ -37,12 +38,27 @@ int set_frame_buffer(uint16_t mode) {
 
     /* Map memory */
     video_mem = vm_map_phys(SELF, (void *)mr.mr_base, vram_size);
+    back_buf = vm_map_phys(SELF, (void *)mr.mr_base, vram_size);
 
     if(video_mem == MAP_FAILED) {
         panic("couldn't map video memory");
         return 1;
     }
     return 0;
+}
+
+void clear_back_buf(uint32_t color) {
+    unsigned bytes_per_pixel = (mode_info.BitsPerPixel + 7) / 8;
+    uint32_t normalized_color;
+    norm_color(color, &normalized_color);
+    
+    for (unsigned i = 0; i < vram_size; i += bytes_per_pixel) {
+        memcpy(&back_buf[i], &normalized_color, bytes_per_pixel);
+    }
+}
+
+void swap_buffers() {
+    memcpy(video_mem, back_buf, vram_size);
 }
 
 int vg_draw_pixel(uint16_t x, uint16_t y, uint32_t color) {
@@ -52,7 +68,7 @@ int vg_draw_pixel(uint16_t x, uint16_t y, uint32_t color) {
     // pixel index
     unsigned int bytes_per_pixel = (mode_info.BitsPerPixel+7)/8;
     unsigned int idx = (mode_info.XResolution * y + x) * bytes_per_pixel;
-    if (memcpy(&video_mem[idx], &color, bytes_per_pixel) == NULL) return 1;
+    if (memcpy(&back_buf[idx], &color, bytes_per_pixel) == NULL) return 1;
     return 0;
 }
 
@@ -66,6 +82,18 @@ int (vg_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
 int (vg_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
     for (unsigned i = 0; i < height; i++) {
         if (vg_draw_hline(x, y+i, width, color) != 0) return 1;
+    }
+    return 0;
+}
+
+int clear_area(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
+    uint32_t normalized_color;
+    norm_color(color, &normalized_color);
+    
+    for (uint16_t i = y; i < y + height; i++) {
+        for (uint16_t j = x; j < x + width; j++) {
+            if (vg_draw_pixel(j, i, normalized_color) != 0) return 1;
+        }
     }
     return 0;
 }

@@ -103,6 +103,7 @@ int menu_handler() {
                         MenuState state = menu_get_state();
                         
                         if (state == MENU_START) {
+                            clear_back_buf(0x000000);
                             if (draw_ship(x) != 0) return 1;
                             init_bullets();
                             init_enemies();

@@ -54,25 +54,23 @@ void menu_handle_input() {
 void menu_render() {
     switch (current_state) {
         case MENU_MAIN:
-            // Desenha o título
             print_xpm(title, 0, 0);
             
-            // Desenha as opções do menu com destaque para a selecionada
             switch (current_option) {
                 case MENU_OPTION_START:
-                    print_xpm(start1, 100, 300);  // Opção selecionada
-                    print_xpm(scores2, 100, 350);  // Opção não selecionada
-                    print_xpm(quit2, 100, 400);    // Opção não selecionada
+                    print_xpm(start1, 100, 300);  
+                    print_xpm(scores2, 100, 350);  
+                    print_xpm(quit2, 100, 400);    
                     break;
                 case MENU_OPTION_SCORES:
-                    print_xpm(start2, 100, 300);   // Opção não selecionada
-                    print_xpm(scores1, 100, 350);  // Opção selecionada
-                    print_xpm(quit2, 100, 400);    // Opção não selecionada
+                    print_xpm(start2, 100, 300);   
+                    print_xpm(scores1, 100, 350);  
+                    print_xpm(quit2, 100, 400);   
                     break;
                 case MENU_OPTION_QUIT:
-                    print_xpm(start2, 100, 300);   // Opção não selecionada
-                    print_xpm(scores2, 100, 350);  // Opção não selecionada
-                    print_xpm(quit1, 100, 400);    // Opção selecionada
+                    print_xpm(start2, 100, 300);   
+                    print_xpm(scores2, 100, 350);  
+                    print_xpm(quit1, 100, 400);    
                     break;
                 default:
                     break;
@@ -83,7 +81,6 @@ void menu_render() {
             break;
             
         case MENU_SCORES:
-            // Tela de pontuações
             print_xpm(score_board, 0, 0);
             break;
             
