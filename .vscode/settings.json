@@ -10,6 +10,8 @@
         "number_char.h": "c",
         "aliens.h": "c",
         "special_char.h": "c",
-        "stdbool.h": "c"
+        "stdbool.h": "c",
+        "locale": "c",
+        "string": "c"
     }
 }

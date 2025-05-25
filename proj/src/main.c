@@ -15,6 +15,7 @@
 #include "confs.h"
 #include "game/ship/ship.h"
 #include "game/game_state.h"
+#include "game/menu/menu.h"
 
 #define TIMER 0
 #define FREQ 60
@@ -68,6 +69,7 @@ int init_game() {
     if (set_graphical_mode(MODE)) return 1;
     if ((kb_subscribe_int)(&irq_set_keyboard)) return 1;
     if ((timer_subscribe_int)(&irq_set_timer)) return 1;
+    menu_init();
     return 0;
 }
 
@@ -78,12 +80,52 @@ int close_game() {
     return 0;
 }
 
+int menu_handler() {
+    message msg;
+    int ipc_status;
+    while (scancode != KB_BREAK_ESC) {
+        if (driver_receive(ANY, &msg, &ipc_status)) {
+            printf("Error: driver_receive failed");
+            continue;
+        }
+        
+        if (is_ipc_notify(ipc_status)) {
+            switch (_ENDPOINT_P(msg.m_source)) {
+                case HARDWARE:
+                    // Teclado
+                    if (msg.m_notify.interrupts & BIT(irq_set_keyboard)) {
+                        kbc_ih();
+                        menu_handle_input();
+                    }
+                    // Timer
+                    if (msg.m_notify.interrupts & BIT(irq_set_timer)) {
+                        timer_int_handler();
+                        MenuState state = menu_get_state();
+                        
+                        if (state == MENU_START) {
+                            if (draw_ship(x) != 0) return 1;
+                            init_bullets();
+                            init_enemies();
+                            if (game_state() != 0) return 1;
+                        } else if (state == MENU_EXIT) {
+                            return close_game();
+                        } else {
+                            menu_render();
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    return 0;
+}
+
 
 int (proj_main_loop)(int argc, char *argv[]) {
     if (init_game() != 0) return close_game();
-    if (draw_ship(x) != 0) return 1;
-    init_bullets();
-    init_enemies();
-    if (game_state() != 0) return 1;
+    if (menu_handler() != 0) return 1;
     return close_game();
 }
+

@@ -1,6 +1,6 @@
 
-#ifndef GAME_LOOP_H
-#define GAME_LOOP_H
+#ifndef GAME_STATE_H
+#define GAME_STATE_H
 
 #define FREQUENCY 60
 #define MODE 0x14c
