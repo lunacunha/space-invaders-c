@@ -6,6 +6,12 @@
         "xpm.h": "c",
         "pixmap.h": "c",
         "letter_char.h": "c",
-        "options.h": "c"
+        "options.h": "c",
+        "number_char.h": "c",
+        "aliens.h": "c",
+        "special_char.h": "c",
+        "stdbool.h": "c",
+        "locale": "c",
+        "string": "c"
     }
 }

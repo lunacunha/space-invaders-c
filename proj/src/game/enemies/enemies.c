@@ -58,8 +58,11 @@ int draw_all_enemies() {
 // Clear enemy from screen
 int clear_enemy(Enemy* enemy) {
     if (!enemy->active) return 0;
-    return vg_draw_rectangle(enemy->x, enemy->y, ENEMY_WIDTH, ENEMY_HEIGHT, 0x000000);
+    clear_area(enemy->x, enemy->y, ENEMY_WIDTH, ENEMY_HEIGHT, 0x000000);
+    swap_buffers(); 
+    return 0;
 }
+
 
 // Clear all enemies from screen
 int clear_all_enemies() {

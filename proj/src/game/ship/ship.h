@@ -4,6 +4,7 @@
 
 #include <lcom/lcf.h>
 #include "src/controllers/graphics/graphic.h"
+#include "src/controllers/keyboard/kb_controller.h"
 #include "src/xpm/game/player.h"
 #include "src/xpm/messages.h"
 
@@ -23,7 +24,7 @@ int (draw_ship)(uint16_t x);
 
 void (init_bullets)();
 
-void (ship_action)(uint8_t code, vbe_mode_info_t mode_info);
+void (ship_action)();
 
 void (shoot_bullets)();
 

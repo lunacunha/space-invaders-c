@@ -8,10 +8,11 @@ PROG=proj
 .PATH: ${.CURDIR}/src/game/ship
 .PATH: ${.CURDIR}/src/game/enemies
 .PATH: ${.CURDIR}/src/game
+.PATH: ${.CURDIR}/src/game/menu
 
 
 # source code files to be compiled
-SRCS = utils.c timer.c kb_controller.c kb_interrupts.c graphic.c main.c ship.c game_state.c enemies.c
+SRCS = utils.c timer.c kb_controller.c kb_interrupts.c graphic.c main.c ship.c game_state.c enemies.c menu.c
 
 # additional compilation flags
 # "-Wall -Wextra -Werror -I . -std=c11 -Wno-unused-parameter" are already set

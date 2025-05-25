@@ -4,6 +4,8 @@ int ship_width = 50;
 int ship_height = 50;
 int bullet_width = 50;
 int bullet_height = 30;
+extern vbe_mode_info_t mode_info;
+extern uint8_t scancode;
 
 int draw_ship(uint16_t x) {
     if (print_xpm(ship, x, 600) != 0) return 1;
@@ -17,22 +19,22 @@ void init_bullets() {
     }
 }
 
-void ship_action(uint8_t code, vbe_mode_info_t mode_info) {
+void ship_action() {
     int prev_x = x; 
 
-    if (code == 0x1e) { // 'A' key (make code)
+    if (scancode == KB_A) { // 'A' key (make code)
         if (x > ship_width) { 
             x -= 30; 
         }
         printf("Left key pressed, x: %d\n", x);
     } 
-    else if (code == 0x20) { // 'D' key (make code)
+    else if (scancode == KB_D) { // 'D' key (make code)
         x += 30;
         if (x > mode_info.XResolution - ship_width) { 
             x = mode_info.XResolution - ship_width;
         }
     } 
-    else if (code == 0x39) {
+    else if (scancode == KB_SPACE) {
         for (int i = 0; i < MAX_BULLETS; i++) {
             if (!bullets[i].active) { 
                 bullets[i].x = x;    

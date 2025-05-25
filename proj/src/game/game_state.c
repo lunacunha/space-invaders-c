@@ -35,7 +35,13 @@ int check_bullet_enemy_collision() {
     return 0;
 }
 
-
+void enemies_moving() {
+    enemy_move_timer++;
+    if (enemy_move_timer >= 30) {
+        move_enemies();
+        enemy_move_timer = 0;
+    }
+}
 
 int game_state() {
     int ipc_st;
@@ -57,23 +63,14 @@ int game_state() {
                         bool is_break = scancode & KB_BREAK_CODE; 
 
                         if (!is_break) { 
-                            ship_action(scancode, mode_info);
+                            ship_action();
                         }
                     }
                     // timer
                     if (msg.m_notify.interrupts & BIT(irq_set_timer)) {   
                         timer_int_handler();  
                         shoot_bullets();
-                        
-                        enemy_move_timer++;
-                        if (enemy_move_timer >= 30) {
-                            if (move_enemies() != 0) {
-                                printf("Error moving enemies\n");
-                                return 1;
-                            }
-                            enemy_move_timer = 0;
-                        }
-
+                        enemies_moving();
                         check_bullet_enemy_collision();
                         if (count_active_enemies() == 0) {
                             printf("All enemies destroyed! You win!\n");
