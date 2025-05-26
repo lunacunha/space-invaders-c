@@ -27,9 +27,6 @@ int check_bullet_enemy_collision() {
                 bullets[i].active = false;
                 enemies[j].active = false;
                 
-                // Clear the enemy from screen
-                clear_enemy(&enemies[j]);
-                
                 printf("Enemy hit!\n");
                 return 1; // Return 1 to indicate a hit occurred
             }
@@ -72,12 +69,28 @@ int game_state() {
                     // timer
                     if (msg.m_notify.interrupts & BIT(irq_set_timer)) {   
                         timer_int_handler();  
+                        
+                        // Clear the entire back buffer first
+                        clear_back_buf(0x000000);
+                        
+                        // Update game logic
                         shoot_bullets();
                         enemies_moving();
                         check_bullet_enemy_collision();
+                        
+                        // Draw everything to back buffer
+                        if (draw_ship(x) != 0) return 1;
+                        if (draw_all_enemies() != 0) {
+                            printf("Error drawing enemies\n");
+                            return 1;
+                        }
+                        if (draw_all_bullets() != 0) return 1; // Make sure you have this function
+                        
+                        // Swap buffers once per frame
+                        swap_buffers();
+                        
+                        // Check win condition
                         if (count_active_enemies() == 0) {
-                            if (vg_draw_rectangle(0, 0, mode_info.XResolution, mode_info.YResolution, 0x000000)) return 1;
-
                             player_win = true;
                             menu_set_state(MENU_SCORES);
                             return 0;
@@ -89,11 +102,6 @@ int game_state() {
                     break;
             }
         }
-        if (draw_all_enemies() != 0) {
-            printf("Error drawing enemies\n");
-            return 1;
-        }
-
     }
     menu_set_state(MENU_MAIN);
     return 0;

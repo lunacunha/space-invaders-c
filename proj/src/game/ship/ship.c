@@ -64,6 +64,30 @@ void ship_action() {
     }
 }
 
+// Draw a single bullet
+int draw_bullet(Bullet* bullet) {
+    if (!bullet->active) return 0;
+    
+    // Draw bullet as a small rectangle or use an XPM if you have one
+    if (vg_draw_rectangle(bullet->x, bullet->y, 4, 8, 0x00FF00) != 0) {
+        return 1;
+    }
+    return 0;
+}
+
+// Draw all active bullets
+int draw_all_bullets() {
+    for (int i = 0; i < MAX_BULLETS; i++) {
+        if (bullets[i].active) {
+            if (draw_bullet(&bullets[i]) != 0) {
+                printf("Error drawing bullet %d\n", i);
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
 
 void shoot_bullets() {
     for (int i = 0; i < MAX_BULLETS; i++) {

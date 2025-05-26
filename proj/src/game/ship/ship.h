@@ -26,6 +26,10 @@ void (init_bullets)();
 
 void (ship_action)();
 
+int (draw_all_bullets)();
+
+int (draw_bullet)(Bullet* bullet);
+
 void (shoot_bullets)();
 
 #endif
