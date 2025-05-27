@@ -1,4 +1,3 @@
-
 #ifndef SHIP_H
 #define SHIP_H
 
@@ -11,6 +10,9 @@
 #define FREQUENCY 60
 #define MODE 0x14c
 #define MAX_BULLETS 10 
+
+#define BULLET_WIDTH 50
+#define BULLET_HEIGHT 30
 
 typedef struct {
     int x;         
@@ -26,6 +28,10 @@ void (init_bullets)();
 
 void (ship_action)();
 
-void (shoot_bullets)();
+int (draw_all_bullets)();
+
+int (draw_bullet)(Bullet* bullet_obj);
+
+void (update_bullets)(); 
 
 #endif

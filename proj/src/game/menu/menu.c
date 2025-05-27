@@ -52,6 +52,9 @@ void menu_handle_input() {
 }
 
 void menu_render() {
+    // Clear the back buffer first (optional - choose appropriate background color)
+    clear_back_buf(0x000000); // Black background
+    
     // Get screen dimensions from mode_info
     uint16_t screen_width = mode_info.XResolution;
     uint16_t screen_height = mode_info.YResolution;
@@ -118,6 +121,9 @@ void menu_render() {
         default:
             break;
     }
+    
+    // CRITICAL: Swap buffers to display the rendered menu
+    swap_buffers();
 }
 
 MenuState menu_get_state() {

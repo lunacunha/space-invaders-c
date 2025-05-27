@@ -17,20 +17,18 @@ int check_bullet_enemy_collision() {
         for (int j = 0; j < MAX_ENEMIES; j++) {
             if (!enemies[j].active) continue;
             
-            // Simple bounding box collision
+            // Proper bounding box collision with correct bullet dimensions
             if (bullets[i].x < enemies[j].x + ENEMY_WIDTH &&
-                bullets[i].x + 10 > enemies[j].x &&
+                bullets[i].x + BULLET_WIDTH > enemies[j].x &&     // Use actual bullet width
                 bullets[i].y < enemies[j].y + ENEMY_HEIGHT &&
-                bullets[i].y + 10 > enemies[j].y) {
+                bullets[i].y + BULLET_HEIGHT > enemies[j].y) {    // Use actual bullet height
                 
                 // Hit! Deactivate both bullet and enemy
                 bullets[i].active = false;
                 enemies[j].active = false;
                 
-                // Clear the enemy from screen
-                clear_enemy(&enemies[j]);
-                
-                printf("Enemy hit!\n");
+                printf("Enemy hit! Bullet (%d,%d) hit enemy (%d,%d)\n", 
+                       bullets[i].x, bullets[i].y, enemies[j].x, enemies[j].y);
                 return 1; // Return 1 to indicate a hit occurred
             }
         }
@@ -66,18 +64,34 @@ int game_state() {
                         bool is_break = scancode & KB_BREAK_CODE; 
 
                         if (!is_break) { 
-                            ship_action();
+                            ship_action(); // This now only updates position/shoots, no drawing
                         }
                     }
                     // timer
                     if (msg.m_notify.interrupts & BIT(irq_set_timer)) {   
                         timer_int_handler();  
-                        shoot_bullets();
+                        
+                        // Clear the entire back buffer first
+                        clear_back_buf(0x000000);
+                        
+                        // Update game logic (no drawing in these functions)
+                        update_bullets(); // Use the new function name
                         enemies_moving();
                         check_bullet_enemy_collision();
+                        
+                        // Draw everything to back buffer in correct order
+                        if (draw_ship(x) != 0) return 1;
+                        if (draw_all_enemies() != 0) {
+                            printf("Error drawing enemies\n");
+                            return 1;
+                        }
+                        if (draw_all_bullets() != 0) return 1;
+                        
+                        // Swap buffers once per frame
+                        swap_buffers();
+                        
+                        // Check win condition
                         if (count_active_enemies() == 0) {
-                            if (vg_draw_rectangle(0, 0, mode_info.XResolution, mode_info.YResolution, 0x000000)) return 1;
-
                             player_win = true;
                             menu_set_state(MENU_SCORES);
                             return 0;
@@ -89,11 +103,6 @@ int game_state() {
                     break;
             }
         }
-        if (draw_all_enemies() != 0) {
-            printf("Error drawing enemies\n");
-            return 1;
-        }
-
     }
     menu_set_state(MENU_MAIN);
     return 0;

@@ -36,15 +36,28 @@ int set_frame_buffer(uint16_t mode) {
         return 1;
     }
 
-    /* Map memory */
+    /* Map video memory */
     video_mem = vm_map_phys(SELF, (void *)mr.mr_base, vram_size);
-    back_buf = vm_map_phys(SELF, (void *)mr.mr_base, vram_size);
-
     if(video_mem == MAP_FAILED) {
         panic("couldn't map video memory");
         return 1;
     }
+
+    /* Allocate separate back buffer in system RAM */
+    back_buf = malloc(vram_size);
+    if(back_buf == NULL) {
+        printf("Failed to allocate back buffer\n");
+        return 1;
+    }
+
     return 0;
+}
+
+void cleanup_buffers() {
+    if(back_buf) {
+        free(back_buf);
+        back_buf = NULL;
+    }
 }
 
 void clear_back_buf(uint32_t color) {
@@ -127,8 +140,3 @@ int (print_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
     }
     return 0;
 }
-
-
-
-
-

@@ -55,16 +55,15 @@ int draw_all_enemies() {
     return 0;
 }
 
-// Clear enemy from screen
+// Clear enemy from back buffer only (no swap)
 int clear_enemy(Enemy* enemy) {
     if (!enemy->active) return 0;
     clear_area(enemy->x, enemy->y, ENEMY_WIDTH, ENEMY_HEIGHT, 0x000000);
-    swap_buffers(); 
+    // Remove the swap_buffers() call from here
     return 0;
 }
 
-
-// Clear all enemies from screen
+// Clear all enemies from back buffer only (no swap)
 int clear_all_enemies() {
     for (int i = 0; i < MAX_ENEMIES; i++) {
         if (enemies[i].active) {
@@ -99,10 +98,7 @@ int move_enemies() {
         return 0;
     }
     
-    // Clear all enemies from current positions
-    clear_all_enemies();
-    
-    // Move all enemies
+    // Move all enemies (no clearing here, will be handled in main loop)
     for (int i = 0; i < MAX_ENEMIES; i++) {
         if (enemies[i].active) {
             if (should_drop) {
