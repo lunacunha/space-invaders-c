@@ -17,17 +17,18 @@ int check_bullet_enemy_collision() {
         for (int j = 0; j < MAX_ENEMIES; j++) {
             if (!enemies[j].active) continue;
             
-            // Simple bounding box collision - use proper bullet dimensions
+            // Proper bounding box collision with correct bullet dimensions
             if (bullets[i].x < enemies[j].x + ENEMY_WIDTH &&
-                bullets[i].x + 4 > enemies[j].x &&  // Use actual bullet width
+                bullets[i].x + BULLET_WIDTH > enemies[j].x &&     // Use actual bullet width
                 bullets[i].y < enemies[j].y + ENEMY_HEIGHT &&
-                bullets[i].y + 8 > enemies[j].y) {  // Use actual bullet height
+                bullets[i].y + BULLET_HEIGHT > enemies[j].y) {    // Use actual bullet height
                 
                 // Hit! Deactivate both bullet and enemy
                 bullets[i].active = false;
                 enemies[j].active = false;
                 
-                printf("Enemy hit!\n");
+                printf("Enemy hit! Bullet (%d,%d) hit enemy (%d,%d)\n", 
+                       bullets[i].x, bullets[i].y, enemies[j].x, enemies[j].y);
                 return 1; // Return 1 to indicate a hit occurred
             }
         }
