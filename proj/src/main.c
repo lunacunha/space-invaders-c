@@ -29,6 +29,7 @@ extern vbe_mode_info_t mode_info;
 uint8_t irq_set_keyboard, irq_set_timer;
 extern bool player_win;
 extern bool player_lost;
+static bool show_scores_drawn = false;
 
 
 // With characters test
@@ -112,26 +113,32 @@ int menu_handler() {
                             init_enemies();
                             if (game_state() != 0) return 1;
                         } else if (state == MENU_SCORES) {
-                            //This state is for score state and for intermediates states where the player use a enter to continue
-                            if (vg_draw_rectangle(0, 0, mode_info.XResolution, mode_info.YResolution, 0x000000)) return 1;
-                            
-                            if (!player_win && !player_lost) {
-                                if (print_xpm(score_board, 0, 0)) return 1;
-                                if (print_xpm(message1, 300, 500)) return 1;
-                            } else if (player_win) {
-                                if (print_xpm(message3, 400, 300)) return 1;
-                                if (print_xpm(message2, 300, 400)) return 1;
-                                if (print_xpm(message1, 300, 500)) return 1;
-                            } else if (player_lost) {
-                                if (print_xpm(message4, 400, 300)) return 1;
-                                if (print_xpm(message1, 300, 500)) return 1;
+                            if (!show_scores_drawn) {
+                                if (vg_draw_rectangle(0, 0, mode_info.XResolution, mode_info.YResolution, 0x000000)) return 1;
+
+                                if (!player_win && !player_lost) {
+                                    if (print_xpm(score_board, 300, 100)) return 1;
+                                    if (print_xpm(cursor, 400, 300)) return 1;
+                                    if (print_xpm(message1, 300, 500)) return 1;
+                                } else if (player_win) {
+                                    if (print_xpm(message3, 400, 300)) return 1;
+                                    if (print_xpm(message2, 300, 400)) return 1;
+                                    if (print_xpm(message1, 300, 500)) return 1;
+                                } else if (player_lost) {
+                                    if (print_xpm(message4, 400, 300)) return 1;
+                                    if (print_xpm(message1, 300, 500)) return 1;
+                                }
+
+                                swap_buffers();
+                                show_scores_drawn = true;
                             }
 
-                            player_win = false;
-                            player_lost = false;
                             if (score_state() != 0) return 1;
 
-                            if (vg_draw_rectangle(0, 0, mode_info.XResolution, mode_info.YResolution, 0x000000)) return 1;
+                            // reset state
+                            player_win = false;
+                            player_lost = false;
+                            show_scores_drawn = false;
                             menu_set_state(MENU_MAIN);
                         } else if (state == MENU_EXIT) {
                             return 0;
