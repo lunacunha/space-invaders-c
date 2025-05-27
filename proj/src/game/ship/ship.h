@@ -11,7 +11,7 @@
 #define MODE 0x14c
 #define MAX_BULLETS 10 
 
-#define BULLET_WIDTH 50
+#define BULLET_WIDTH 8
 #define BULLET_HEIGHT 30
 
 typedef struct {

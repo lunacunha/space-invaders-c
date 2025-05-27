@@ -1,24 +1,41 @@
 Left key pressed, x: 320
-Left key pressed, x: 290
-Left key pressed, x: 260
-Left key pressed, x: 230
-Enemy hit! Bullet (343,200) hit enemy (360,170)
-Left key pressed, x: 200
-Enemy hit! Bullet (313,200) hit enemy (280,170)
-Left key pressed, x: 170
-Enemy hit! Bullet (283,140) hit enemy (290,110)
-Left key pressed, x: 140
-Enemy hit! Bullet (253,80) hit enemy (290,50)
-Enemy hit! Bullet (223,200) hit enemy (210,170)
-Enemy hit! Bullet (193,140) hit enemy (220,110)
-Enemy hit! Bullet (163,200) hit enemy (150,170)
-Enemy hit! Bullet (163,140) hit enemy (160,110)
-Enemy hit! Bullet (223,80) hit enemy (250,50)
-Left key pressed, x: 200
-Left key pressed, x: 170
-Enemy hit! Bullet (223,80) hit enemy (190,50)
-Enemy hit! Bullet (463,140) hit enemy (480,110)
-Enemy hit! Bullet (493,80) hit enemy (490,50)
-Enemy hit! Bullet (553,200) hit enemy (570,170)
-Enemy hit! Bullet (583,140) hit enemy (580,110)
-Enemy hit! Bullet (613,80) hit enemy (600,50)
+Enemy hit! Bullet (403,240) hit enemy (380,210)
+Enemy hit! Bullet (433,160) hit enemy (400,130)
+Left key pressed, x: 440
+Left key pressed, x: 410
+Left key pressed, x: 380
+Left key pressed, x: 350
+Enemy hit! Bullet (373,240) hit enemy (360,210)
+Enemy hit! Bullet (433,60) hit enemy (400,50)
+Left key pressed, x: 470
+Left key pressed, x: 440
+Enemy hit! Bullet (493,160) hit enemy (460,130)
+Left key pressed, x: 410
+Left key pressed, x: 380
+Enemy hit! Bullet (403,240) hit enemy (380,210)
+Enemy hit! Bullet (433,160) hit enemy (440,130)
+Enemy hit! Bullet (493,80) hit enemy (480,50)
+Left key pressed, x: 980
+Left key pressed, x: 1010
+Left key pressed, x: 980
+Left key pressed, x: 950
+Enemy hit! Bullet (1033,280) hit enemy (1000,250)
+Left key pressed, x: 920
+Enemy hit! Bullet (1003,200) hit enemy (1000,170)
+Left key pressed, x: 890
+Enemy hit! Bullet (973,120) hit enemy (980,90)
+Left key pressed, x: 860
+Left key pressed, x: 830
+Left key pressed, x: 800
+Left key pressed, x: 770
+Enemy hit! Bullet (853,280) hit enemy (820,250)
+Left key pressed, x: 740
+Enemy hit! Bullet (823,200) hit enemy (800,170)
+Left key pressed, x: 710
+Enemy hit! Bullet (793,120) hit enemy (780,90)
+Left key pressed, x: 680
+Left key pressed, x: 650
+Left key pressed, x: 620
+Left key pressed, x: 590
+Left key pressed, x: 560
+Enemy hit! Bullet (613,120) hit enemy (580,90)

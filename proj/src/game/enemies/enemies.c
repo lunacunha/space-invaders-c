@@ -102,9 +102,9 @@ int move_enemies() {
     for (int i = 0; i < MAX_ENEMIES; i++) {
         if (enemies[i].active) {
             if (should_drop) {
-                enemies[i].y += 20; // Drop down
+                enemies[i].y += 40; // Drop down
             } else {
-                enemies[i].x += enemy_direction * 10; // Move horizontally
+                enemies[i].x += enemy_direction * 20; // Move horizontally
             }
         }
     }
