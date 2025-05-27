@@ -1,4 +1,3 @@
-
 #ifndef SHIP_H
 #define SHIP_H
 
@@ -28,8 +27,8 @@ void (ship_action)();
 
 int (draw_all_bullets)();
 
-int (draw_bullet)(Bullet* bullet);
+int (draw_bullet)(Bullet* bullet_obj);
 
-void (shoot_bullets)();
+void (update_bullets)(); // Changed from shoot_bullets to update_bullets
 
 #endif

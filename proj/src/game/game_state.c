@@ -17,11 +17,11 @@ int check_bullet_enemy_collision() {
         for (int j = 0; j < MAX_ENEMIES; j++) {
             if (!enemies[j].active) continue;
             
-            // Simple bounding box collision
+            // Simple bounding box collision - use proper bullet dimensions
             if (bullets[i].x < enemies[j].x + ENEMY_WIDTH &&
-                bullets[i].x + 10 > enemies[j].x &&
+                bullets[i].x + 4 > enemies[j].x &&  // Use actual bullet width
                 bullets[i].y < enemies[j].y + ENEMY_HEIGHT &&
-                bullets[i].y + 10 > enemies[j].y) {
+                bullets[i].y + 8 > enemies[j].y) {  // Use actual bullet height
                 
                 // Hit! Deactivate both bullet and enemy
                 bullets[i].active = false;
@@ -63,7 +63,7 @@ int game_state() {
                         bool is_break = scancode & KB_BREAK_CODE; 
 
                         if (!is_break) { 
-                            ship_action();
+                            ship_action(); // This now only updates position/shoots, no drawing
                         }
                     }
                     // timer
@@ -73,18 +73,18 @@ int game_state() {
                         // Clear the entire back buffer first
                         clear_back_buf(0x000000);
                         
-                        // Update game logic
-                        shoot_bullets();
+                        // Update game logic (no drawing in these functions)
+                        update_bullets(); // Use the new function name
                         enemies_moving();
                         check_bullet_enemy_collision();
                         
-                        // Draw everything to back buffer
+                        // Draw everything to back buffer in correct order
                         if (draw_ship(x) != 0) return 1;
                         if (draw_all_enemies() != 0) {
                             printf("Error drawing enemies\n");
                             return 1;
                         }
-                        if (draw_all_bullets() != 0) return 1; // Make sure you have this function
+                        if (draw_all_bullets() != 0) return 1;
                         
                         // Swap buffers once per frame
                         swap_buffers();

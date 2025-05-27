@@ -12,7 +12,6 @@ int draw_ship(uint16_t x) {
     return 0;
 }
 
-
 void init_bullets() {
     for (int i = 0; i < MAX_BULLETS; i++) {
         bullets[i].active = false;
@@ -20,8 +19,6 @@ void init_bullets() {
 }
 
 void ship_action() {
-    int prev_x = x; 
-
     if (scancode == KB_A) { // 'A' key (make code)
         if (x > ship_width) { 
             x -= 30; 
@@ -37,39 +34,22 @@ void ship_action() {
     else if (scancode == KB_SPACE) {
         for (int i = 0; i < MAX_BULLETS; i++) {
             if (!bullets[i].active) { 
-                bullets[i].x = x;    
+                bullets[i].x = x + ship_width/2 - 2; // Center the bullet
                 bullets[i].y = 570;   
                 bullets[i].active = true;
                 break;
             }
         }
-
-
     }
-
-    // Limpar apenas a área onde a nave estava antes
-    if (prev_x != x) { // Apenas limpe e redesenhe se a posição mudou
-        vg_draw_rectangle(prev_x, 600, ship_width, ship_height, 0x000000);
-        prev_x = x;
-    }
-
-    // Redesenhar a nave na nova posição
-    draw_ship(prev_x);
-
-    // Desenhar balas
-    for (int i = 0; i < MAX_BULLETS; i++) {
-        if (bullets[i].active) {
-            print_xpm(bullet, bullets[i].x, bullets[i].y);
-        }
-    }
+    // Remove all drawing code from here - let the main loop handle it
 }
 
-// Draw a single bullet
-int draw_bullet(Bullet* bullet) {
-    if (!bullet->active) return 0;
+// Draw a single bullet - ONLY use this method
+int draw_bullet(Bullet* bullet_obj) {
+    if (!bullet_obj->active) return 0;
     
-    // Draw bullet as a small rectangle or use an XPM if you have one
-    if (vg_draw_rectangle(bullet->x, bullet->y, 4, 8, 0x00FF00) != 0) {
+    // Use the same XPM that was working in your original code
+    if (print_xpm(bullet, bullet_obj->x, bullet_obj->y) != 0) {
         return 1;
     }
     return 0;
@@ -88,22 +68,20 @@ int draw_all_bullets() {
     return 0;
 }
 
-
-void shoot_bullets() {
+// Update bullet positions - NO DRAWING HERE
+void update_bullets() {
     for (int i = 0; i < MAX_BULLETS; i++) {
         if (bullets[i].active) {
-            // Limpar a posição anterior da bala
-            vg_draw_rectangle(bullets[i].x, bullets[i].y, bullet_width, bullet_height, 0x000000);
-        // Atualizar a posição da bala
+            // Just update position
             bullets[i].y -= 10;
-        // Desativar a bala se sair da tela
+            
+            // Deactivate if off screen
             if (bullets[i].y < 0) { 
                 bullets[i].active = false;
-            } else {
-                // Redesenhar a bala na nova posição
-                print_xpm(bullet, bullets[i].x, bullets[i].y);
             }
         }
     }
-
 }
+
+
+// Remove the old shoot_bullets function - replace with update_bullets
