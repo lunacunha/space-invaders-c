@@ -1,130 +1,88 @@
-#include "enemies.h"
+#include "ship.h"
+
+uint16_t x = 350;
+int ship_width = 50;
+int ship_height = 50;
+int bullet_width = 50;
+int bullet_height = 30;
+
 extern vbe_mode_info_t mode_info;
-int enemy_direction = 1; // 1 for right, -1 for left
-int enemy_move_timer = 0;
-int enemy_drop_timer = 0;
-bool should_drop = false;
+extern uint8_t scancode;
 
-
-int init_enemies() {
-    int enemy_index = 0;
-    
-    for (int row = 0; row < ENEMY_ROWS; row++) {
-        for (int col = 0; col < ENEMY_COLS; col++) {
-            if (enemy_index < MAX_ENEMIES) {
-                enemies[enemy_index].x = ENEMY_START_X + (col * ENEMY_SPACING_X);
-                enemies[enemy_index].y = ENEMY_START_Y + (row * ENEMY_SPACING_Y);
-                enemies[enemy_index].active = true;
-                enemies[enemy_index].type = row; // Different types for different rows
-                enemy_index++;
-            }
-        }
-    }
-    
-    return 0;
+int draw_ship(uint16_t x) {
+  if (print_xpm(ship, x, 600) != 0)
+    return 1;
+  return 0;
 }
 
-
-// Draw a single enemy
-int draw_enemy(Enemy* enemy) {
-    if (!enemy->active) return 0;
-    
-    // Use different alien sprites based on enemy type
-    switch (enemy->type) {
-        case 0:
-            return print_xpm(Alien1, enemy->x, enemy->y);
-        case 1:
-            return print_xpm(Alien2, enemy->x, enemy->y);
-        case 2:
-            return print_xpm(Alien3, enemy->x, enemy->y);
-        default:
-            return print_xpm(Alien1, enemy->x, enemy->y);
-    }
+void init_bullets() {
+  for (int i = 0; i < MAX_BULLETS; i++) {
+    bullets[i].active = false;
+  }
 }
 
-// Draw all active enemies
-int draw_all_enemies() {
-    for (int i = 0; i < MAX_ENEMIES; i++) {
-        if (enemies[i].active) {
-            if (draw_enemy(&enemies[i]) != 0) {
-                printf("Error drawing enemy %d\n", i);
-                return 1;
-            }
-        }
+void ship_action() {
+  if (scancode == KB_A) { // 'A' key (make code)
+    if (x > ship_width) {
+      x -= 30;
     }
-    return 0;
+    printf("Left key pressed, x: %d\n", x);
+  }
+  else if (scancode == KB_D) { // 'D' key (make code)
+    x += 30;
+    if (x > mode_info.XResolution - ship_width) {
+      x = mode_info.XResolution - ship_width;
+    }
+  }
+  else if (scancode == KB_SPACE) {
+    for (int i = 0; i < MAX_BULLETS; i++) {
+      if (!bullets[i].active) {
+        bullets[i].x = x;
+        bullets[i].y = 570;
+        bullets[i].active = true;
+        break;
+      }
+    }
+  }
 }
 
-// Clear enemy from screen
-int clear_enemy(Enemy* enemy) {
-    if (!enemy->active) return 0;
-    clear_area(enemy->x, enemy->y, ENEMY_WIDTH, ENEMY_HEIGHT, 0x000000);
-    swap_buffers(); 
-    return 0;
+void shoot_bullets() {
+  for (int i = 0; i < MAX_BULLETS; i++) {
+    if (bullets[i].active) {
+      bullets[i].y -= 10;
+      if (bullets[i].y < 0) {
+        bullets[i].active = false;
+      }
+    }
+  }
 }
 
-
-// Clear all enemies from screen
-int clear_all_enemies() {
-    for (int i = 0; i < MAX_ENEMIES; i++) {
-        if (enemies[i].active) {
-            if (clear_enemy(&enemies[i]) != 0) {
-                printf("Error clearing enemy %d\n", i);
-                return 1;
-            }
-        }
+void draw_all_bullets() {
+  for (int i = 0; i < MAX_BULLETS; i++) {
+    if (bullets[i].active) {
+      print_xpm(bullet, bullets[i].x, bullets[i].y);
     }
-    return 0;
+  }
 }
 
-// Move enemies in formation
-int move_enemies() {
-    bool hit_edge = false;
-    
-    // Check if any enemy hits the screen edge
-    for (int i = 0; i < MAX_ENEMIES; i++) {
-        if (enemies[i].active) {
-            if ((enemy_direction > 0 && enemies[i].x + ENEMY_WIDTH >= mode_info.XResolution - 20) ||
-                (enemy_direction < 0 && enemies[i].x <= 20)) {
-                hit_edge = true;
-                break;
-            }
-        }
-    }
-    
-    // If hit edge, change direction and mark for dropping down
-    if (hit_edge) {
-        enemy_direction *= -1;
-        should_drop = true;
-        return 0;
-    }
-    
-    // Clear all enemies from current positions
-    clear_all_enemies();
-    
-    // Move all enemies
-    for (int i = 0; i < MAX_ENEMIES; i++) {
-        if (enemies[i].active) {
-            if (should_drop) {
-                enemies[i].y += 20; // Drop down
-            } else {
-                enemies[i].x += enemy_direction * 10; // Move horizontally
-            }
-        }
-    }
-    
-    if (should_drop) {
-        should_drop = false;
-    }
-    
-    return 0;
-}
+void check_collisions() {
+  for (int b = 0; b < MAX_BULLETS; b++) {
+    if (!bullets[b].active)
+      continue;
 
-// Count active enemies
-int count_active_enemies() {
-    int count = 0;
-    for (int i = 0; i < MAX_ENEMIES; i++) {
-        if (enemies[i].active) count++;
+    for (int e = 0; e < MAX_ENEMIES; e++) {
+      if (!enemies[e].active)
+        continue;
+
+      if (bullets[b].x < enemies[e].x + ENEMY_WIDTH &&
+          bullets[b].x + bullet_width > enemies[e].x &&
+          bullets[b].y < enemies[e].y + ENEMY_HEIGHT &&
+          bullets[b].y + bullet_height > enemies[e].y) {
+
+        bullets[b].active = false;
+        enemies[e].active = false;
+        break;
+      }
     }
-    return count;
+  }
 }
