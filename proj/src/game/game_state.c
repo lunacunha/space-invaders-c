@@ -2,9 +2,13 @@
 
 extern vbe_mode_info_t mode_info;
 extern uint16_t x;
+uint16_t y = 600;
 extern uint8_t scancode;
 extern uint8_t irq_set_keyboard, irq_set_timer;
 extern int enemy_move_timer;
+extern int ship_width;
+extern int ship_height;
+extern int timer_counter;
 
 bool player_win = false;
 bool player_lost = false;
@@ -34,6 +38,24 @@ int check_bullet_enemy_collision() {
         }
     }
     return 0;
+}
+
+void check_enemy_bullet_collision() {
+    for (int i = 0; i < MAX_ENEMY_BULLETS; i++) {
+        if (!enemy_bullets[i].active) continue; // Skip inactive bullets
+
+        // Check collision with the player's ship
+        if (enemy_bullets[i].x < x + ship_width &&  
+            enemy_bullets[i].x + BULLET_WIDTH > x && 
+            enemy_bullets[i].y < y + ship_height && 
+            enemy_bullets[i].y + BULLET_HEIGHT > y) { 
+            
+            // Collision detected
+            enemy_bullets[i].active = false; // Deactivate the bullet
+            player_lost = true; // Mark the player as lost
+            printf("Player hit by enemy bullet at (%d, %d)!\n", enemy_bullets[i].x, enemy_bullets[i].y);
+        }
+    }
 }
 
 void enemies_moving() {
@@ -77,6 +99,14 @@ int game_state() {
                         // Update game logic (no drawing in these functions)
                         update_bullets(); // Use the new function name
                         enemies_moving();
+
+                        if (timer_counter % 60 == 0) { // Fire every 120 frames
+                            printf("fire\n");
+                            fire_enemy_bullet();
+                        }
+                        update_enemy_bullets();
+
+                        check_enemy_bullet_collision();
                         check_bullet_enemy_collision();
                         
                         // Draw everything to back buffer in correct order
@@ -86,9 +116,16 @@ int game_state() {
                             return 1;
                         }
                         if (draw_all_bullets() != 0) return 1;
+                        draw_enemy_bullets();
                         
                         // Swap buffers once per frame
                         swap_buffers();
+
+                        // Check if the player has lost
+                        if (player_lost) {
+                            menu_set_state(MENU_SCORES);
+                            return 0; // Exit game loop on player loss
+                        }
                         
                         // Check win condition
                         if (count_active_enemies() == 0) {
@@ -96,6 +133,8 @@ int game_state() {
                             menu_set_state(MENU_SCORES);
                             return 0;
                         }
+
+                        
                     }
                     break;
 

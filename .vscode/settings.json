@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "lcf.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "kb_interrupts.h": "c",
+        "enemies.h": "c"
     }
 }

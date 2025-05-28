@@ -16,6 +16,8 @@
 
 int (check_bullet_enemy_collision)();
 
+void (check_enemy_bullet_collision)();
+
 int (game_state)(); 
 
 #endif

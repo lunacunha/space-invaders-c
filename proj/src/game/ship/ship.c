@@ -18,6 +18,12 @@ void init_bullets() {
     }
 }
 
+void init_enemy_bullets() {
+    for (int i = 0; i < MAX_ENEMY_BULLETS; i++) {
+        enemy_bullets[i].active = false;
+    }
+}
+
 void ship_action() {
     if (scancode == KB_A) { // 'A' key (make code)
         if (x > ship_width) { 
@@ -41,7 +47,34 @@ void ship_action() {
             }
         }
     }
-    // Remove all drawing code from here - let the main loop handle it
+    
+}
+
+void fire_enemy_bullet() {
+    int active_enemies = count_active_enemies(); // Count active enemies
+
+    if (active_enemies == 0) return; // No active enemies, no bullets to fire
+
+    // Randomly select an active enemy
+    int random_enemy_index = rand() % active_enemies; // Pick a random active enemy
+    int active_enemy_count = 0;
+
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        if (enemies[i].active) {
+            if (active_enemy_count == random_enemy_index) { // Found the randomly selected enemy
+                for (int j = 0; j < MAX_ENEMY_BULLETS; j++) {
+                    if (!enemy_bullets[j].active) { // Find an inactive bullet
+                        enemy_bullets[j].x = enemies[i].x + (ENEMY_WIDTH / 2); // Center bullet horizontally
+                        enemy_bullets[j].y = enemies[i].y + ENEMY_HEIGHT;      // Start below the enemy
+                        enemy_bullets[j].active = true;
+                        printf("Enemy %d fired bullet from (%d, %d)\n", i, enemy_bullets[j].x, enemy_bullets[j].y);
+                        return; // Fire only one bullet
+                    }
+                }
+            }
+            active_enemy_count++;
+        }
+    }
 }
 
 // Draw a single bullet - ONLY use this method
@@ -53,6 +86,14 @@ int draw_bullet(Bullet* bullet_obj) {
         return 1;
     }
     return 0;
+}
+
+void draw_enemy_bullets() {
+    for (int i = 0; i < MAX_ENEMY_BULLETS; i++) {
+        if (enemy_bullets[i].active) {
+            print_xpm(enemy_bullet, enemy_bullets[i].x, enemy_bullets[i].y);
+        }
+    }
 }
 
 // Draw all active bullets
@@ -78,6 +119,19 @@ void update_bullets() {
             // Deactivate if off screen
             if (bullets[i].y < 0) { 
                 bullets[i].active = false;
+            }
+        }
+    }
+}
+
+void update_enemy_bullets() {
+    for (int i = 0; i < MAX_ENEMY_BULLETS; i++) {
+        if (enemy_bullets[i].active) {
+            enemy_bullets[i].y += 5; // Move bullet downward
+
+            // Deactivate bullet if it goes off-screen
+            if (enemy_bullets[i].y > mode_info.YResolution) {
+                enemy_bullets[i].active = false;
             }
         }
     }
