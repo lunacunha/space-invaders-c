@@ -18,6 +18,10 @@ int (check_bullet_enemy_collision)();
 
 void (check_enemy_bullet_collision)();
 
+void (check_ship_alien_collision)();
+
+void (check_shield_collision)();
+
 int (game_state)(); 
 
 #endif

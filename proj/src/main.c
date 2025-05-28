@@ -111,6 +111,8 @@ int menu_handler() {
                             if (draw_ship(x) != 0) return 1;
                             init_bullets();
                             init_enemies();
+                            init_enemy_bullets();
+                            init_shields();
                             if (game_state() != 0) return 1;
                         } else if (state == MENU_SCORES) {
                             if (!show_scores_drawn) {

@@ -2,13 +2,14 @@
 
 extern vbe_mode_info_t mode_info;
 extern uint16_t x;
-uint16_t y = 600;
+uint16_t y = 700;
 extern uint8_t scancode;
 extern uint8_t irq_set_keyboard, irq_set_timer;
 extern int enemy_move_timer;
 extern int ship_width;
 extern int ship_height;
 extern int timer_counter;
+extern int fire_delay_counter;
 
 bool player_win = false;
 bool player_lost = false;
@@ -58,6 +59,53 @@ void check_enemy_bullet_collision() {
     }
 }
 
+void check_ship_alien_collision() {
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        if (!enemies[i].active) continue; // Skip inactive aliens
+
+        // Check collision with the player's ship
+        if (x < enemies[i].x + ENEMY_WIDTH &&  
+            x + ship_width > enemies[i].x && 
+            y < enemies[i].y + ENEMY_HEIGHT && 
+            y + ship_height > enemies[i].y) {  
+            
+            // Collision detected
+            player_lost = true; 
+            printf("Collision detected! Ship touched alien %d at (%d, %d)\n", i, enemies[i].x, enemies[i].y);
+            return; 
+        }
+    }
+}
+
+void check_shield_collision() {
+    for (int i = 0; i < NUM_SHIELDS; i++) {
+        if (shields[i].state == SHIELD_NONE) continue; // Skip destroyed shields
+
+        for (int j = 0; j < MAX_ENEMY_BULLETS; j++) {
+            if (!enemy_bullets[j].active) continue; // Skip inactive bullets
+
+            // Check collision with the shield
+            if (enemy_bullets[j].x < shields[i].x + SHIELD_WIDTH &&
+                enemy_bullets[j].x + BULLET_WIDTH > shields[i].x &&
+                enemy_bullets[j].y < shields[i].y + SHIELD_HEIGHT &&
+                enemy_bullets[j].y + BULLET_HEIGHT > shields[i].y) {
+                
+                // Collision detected
+                enemy_bullets[j].active = false; // Deactivate the bullet
+
+                // Update shield state
+                if (shields[i].state == SHIELD_FULL) {
+                    shields[i].state = SHIELD_BROKEN; // Full shield becomes broken
+                } else if (shields[i].state == SHIELD_BROKEN) {
+                    shields[i].state = SHIELD_NONE; // Broken shield is destroyed
+                }
+
+                printf("Shield %d hit by bullet!\n", i);
+            }
+        }
+    }
+}
+
 void enemies_moving() {
     enemy_move_timer++;
     if (enemy_move_timer >= 30) {
@@ -92,22 +140,25 @@ int game_state() {
                     // timer
                     if (msg.m_notify.interrupts & BIT(irq_set_timer)) {   
                         timer_int_handler();  
+                        fire_delay_counter++;
                         
                         // Clear the entire back buffer first
                         clear_back_buf(0x000000);
                         
                         // Update game logic (no drawing in these functions)
-                        update_bullets(); // Use the new function name
+                        update_bullets();
+                        update_enemy_bullets();
                         enemies_moving();
 
                         if (timer_counter % 60 == 0) { // Fire every 120 frames
                             printf("fire\n");
                             fire_enemy_bullet();
                         }
-                        update_enemy_bullets();
 
                         check_enemy_bullet_collision();
                         check_bullet_enemy_collision();
+                        check_ship_alien_collision();
+                        check_shield_collision();
                         
                         // Draw everything to back buffer in correct order
                         if (draw_ship(x) != 0) return 1;
@@ -117,6 +168,7 @@ int game_state() {
                         }
                         if (draw_all_bullets() != 0) return 1;
                         draw_enemy_bullets();
+                        draw_shields();
                         
                         // Swap buffers once per frame
                         swap_buffers();

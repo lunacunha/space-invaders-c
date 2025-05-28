@@ -8,12 +8,12 @@
 
 #define FREQUENCY 60
 #define MODE 0x14c
-#define MAX_ENEMIES 15
+#define MAX_ENEMIES 18
 #define ENEMY_ROWS 3
-#define ENEMY_COLS 5
+#define ENEMY_COLS 6
 #define ENEMY_WIDTH 40
 #define ENEMY_HEIGHT 40
-#define ENEMY_SPACING_X 120
+#define ENEMY_SPACING_X 100
 #define ENEMY_SPACING_Y 80
 #define ENEMY_START_X 100
 #define ENEMY_START_Y 50
