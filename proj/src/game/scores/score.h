@@ -5,7 +5,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 #include "../../controllers/keyboard/kb_interrupts.h"
+#include "../../controllers/graphics/graphic.h"
 #include "../menu/menu.h"
 
 typedef struct {
@@ -25,6 +27,11 @@ void score_add_bullet();
 void score_update_time(int timer_ticks);
 int score_calculate_final();
 void score_reset();
+
+void draw_digit(int digit, int x, int y);
+void draw_number(int number, int x, int y, int digit_spacing);
+void draw_live_score();
+void draw_final_score_display();
 
 int score_state(); 
 

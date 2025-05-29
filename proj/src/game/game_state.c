@@ -166,7 +166,6 @@ int game_state() {
                         check_ship_alien_collision();
                         check_shield_collision();
                         
-                        // Draw everything to back buffer in correct order
                         if (draw_ship(x) != 0) return 1;
                         if (draw_all_enemies() != 0) {
                             printf("Error drawing enemies\n");
@@ -175,6 +174,12 @@ int game_state() {
                         if (draw_all_bullets() != 0) return 1;
                         draw_enemy_bullets();
                         draw_shields();
+                        
+                        // Draw the live score
+                        draw_live_score();
+                        
+                        // Swap buffers once per frame
+                        swap_buffers();
                         
                         // Swap buffers once per frame
                         swap_buffers();

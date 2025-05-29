@@ -1,8 +1,15 @@
-#include "./score.h"
+#include "score.h"
 
 extern uint8_t scancode;
 extern uint8_t irq_set_keyboard;
 extern int timer_counter;
+extern vbe_mode_info_t mode_info;
+
+#include "../../xpm/characters/number_char.h"
+
+static xpm_map_t numbers[] = {
+    n0, n1, n2, n3, n4, n5, n6, n7, n8, n9
+};
 
 // Global score tracking
 GameScore current_score = {0, 0, 0};
@@ -69,6 +76,79 @@ void score_reset() {
     game_active = false;
 }
 
+
+void draw_digit(int digit, int x, int y) {
+    if (digit >= 0 && digit <= 9) {
+        print_xpm(numbers[digit], x, y);
+    }
+}
+
+
+void draw_number(int number, int x, int y, int digit_spacing) {
+    if (number == 0) {
+        draw_digit(0, x, y);
+        return;
+    }
+    
+    // Convert number to string to get digits
+    char num_str[12]; // Enough for large integers
+    sprintf(num_str, "%d", number);
+    
+    int len = strlen(num_str);
+    for (int i = 0; i < len; i++) {
+        int digit = num_str[i] - '0';
+        draw_digit(digit, x + (i * digit_spacing), y);
+    }
+}
+
+
+void draw_live_score() {
+    // Define positions for score elements
+    int score_x = 50;           // Left side of screen
+    int score_y = 30;           // Top of screen
+    int digit_spacing = 25;     // Space between digits
+    
+    // Calculate current live score (same formula as final score)
+    int base_score = 10000;
+    int bullet_penalty = current_score.bullets_fired * 50;
+    int time_penalty = current_score.game_time_seconds * 10;
+    int live_score = base_score - bullet_penalty - time_penalty;
+    
+    if (live_score < 100) {
+        live_score = 100;
+    }
+    
+    // Draw "SCORE:"
+    // For now, just draw the numbers
+    draw_number(live_score, score_x, score_y, digit_spacing);
+    
+    // Optionally draw other stats
+    // Bullets fired at top right
+    int bullets_x = mode_info.XResolution - 200;
+    draw_number(current_score.bullets_fired, bullets_x, score_y, digit_spacing);
+    
+    // Time at top center
+    int time_x = (mode_info.XResolution / 2) - 50;
+    draw_number(current_score.game_time_seconds, time_x, score_y, digit_spacing);
+}
+
+void draw_final_score_display() {
+    int center_x = mode_info.XResolution / 2;
+    int center_y = mode_info.YResolution / 2;
+    int digit_spacing = 30;
+    
+    // Draw final score (centered)
+    int score_width = 6 * digit_spacing; // Estimate width for centering
+    int final_score_x = center_x - (score_width / 2);
+    draw_number(current_score.final_score, final_score_x, center_y - 50, digit_spacing);
+    
+    // Draw bullets fired below
+    draw_number(current_score.bullets_fired, final_score_x, center_y, digit_spacing);
+    
+    // Draw time below that
+    draw_number(current_score.game_time_seconds, final_score_x, center_y + 50, digit_spacing);
+}
+
 int score_state() {
     int ipc_status;
     message msg;
@@ -98,4 +178,3 @@ int score_state() {
     }
     return 0;
 }
-
