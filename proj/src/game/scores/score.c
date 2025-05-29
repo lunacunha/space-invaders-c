@@ -5,11 +5,22 @@ extern uint8_t irq_set_keyboard;
 extern int timer_counter;
 extern vbe_mode_info_t mode_info;
 
+// Include the XPMs
 #include "../../xpm/characters/number_char.h"
+#include "../../xpm/characters/letter_char.h"
 
+// Import XPM arrays
 static xpm_map_t numbers[] = {
     n0, n1, n2, n3, n4, n5, n6, n7, n8, n9
 };
+
+static xpm_map_t letters[] = {
+    A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z
+};
+
+#define CHAR_WIDTH 20    
+#define CHAR_HEIGHT 25   
+#define CHAR_SPACING 22  
 
 // Global score tracking
 GameScore current_score = {0, 0, 0};
@@ -43,10 +54,9 @@ int score_calculate_final() {
     if (!game_active) return current_score.final_score;
     
     // Score calculation:
-    // Base score: 10000 points
-    // Penalty: -50 points per bullet fired
-    // Penalty: -10 points per second elapsed
-    // Minimum score: 100 points
+    // Base: 10000 points
+    // -50 per bullet, -10 per second
+    // Minimum: 100 points
     
     int base_score = 10000;
     int bullet_penalty = current_score.bullets_fired * 50;
@@ -54,7 +64,6 @@ int score_calculate_final() {
     
     current_score.final_score = base_score - bullet_penalty - time_penalty;
     
-    // Ensure minimum score
     if (current_score.final_score < 100) {
         current_score.final_score = 100;
     }
@@ -76,6 +85,40 @@ void score_reset() {
     game_active = false;
 }
 
+// Draw single letter at position
+void draw_letter(char letter, int x, int y) {
+    if (letter >= 'A' && letter <= 'Z') {
+        print_xpm(letters[letter - 'A'], x, y);
+    } else if (letter >= 'a' && letter <= 'z') {
+        print_xpm(letters[letter - 'a'], x, y);
+    }
+    // Ignore spaces and other characters
+}
+
+// Draw text string
+void draw_text(const char* text, int x, int y) {
+    int current_x = x;
+    for (int i = 0; text[i] != '\0'; i++) {
+        if (text[i] == ' ') {
+            current_x += CHAR_SPACING;
+        } else {
+            draw_letter(text[i], current_x, y);
+            current_x += CHAR_SPACING;
+        }
+    }
+}
+
+// Get text width for centering
+int calculate_text_width(const char* text) {
+    return strlen(text) * CHAR_SPACING;
+}
+
+// Draw text centered at x position
+void draw_text_centered(const char* text, int center_x, int y) {
+    int text_width = calculate_text_width(text);
+    int start_x = center_x - (text_width / 2);
+    draw_text(text, start_x, y);
+}
 
 void draw_digit(int digit, int x, int y) {
     if (digit >= 0 && digit <= 9) {
@@ -83,32 +126,49 @@ void draw_digit(int digit, int x, int y) {
     }
 }
 
-
-void draw_number(int number, int x, int y, int digit_spacing) {
+// Draw number, returns end x position
+int draw_number(int number, int x, int y) {
     if (number == 0) {
         draw_digit(0, x, y);
-        return;
+        return x + CHAR_SPACING;
     }
     
-    // Convert number to string to get digits
-    char num_str[12]; // Enough for large integers
+    char num_str[12];
     sprintf(num_str, "%d", number);
     
     int len = strlen(num_str);
+    int current_x = x;
     for (int i = 0; i < len; i++) {
         int digit = num_str[i] - '0';
-        draw_digit(digit, x + (i * digit_spacing), y);
+        draw_digit(digit, current_x, y);
+        current_x += CHAR_SPACING;
     }
+    return current_x;
 }
 
+// Draw label and number together
+void draw_label_and_number(const char* label, int number, int x, int y) {
+    draw_text(label, x, y);
+    int label_width = calculate_text_width(label);
+    draw_number(number, x + label_width, y);
+}
 
-void draw_live_score() {
-    // Define positions for score elements
-    int score_x = 50;           // Left side of screen
-    int score_y = 30;           // Top of screen
-    int digit_spacing = 25;     // Space between digits
+// Draw label and number centered
+void draw_label_and_number_centered(const char* label, int number, int center_x, int y) {
+    char num_str[12];
+    sprintf(num_str, "%d", number);
+    int num_width = strlen(num_str) * CHAR_SPACING;
+    int label_width = calculate_text_width(label);
+    int total_width = label_width + num_width;
     
-    // Calculate current live score (same formula as final score)
+    int start_x = center_x - (total_width / 2);
+    draw_text(label, start_x, y);
+    draw_number(number, start_x + label_width, y);
+}
+
+// Draw current score during gameplay
+void draw_live_score() {
+    // Calculate live score using same formula
     int base_score = 10000;
     int bullet_penalty = current_score.bullets_fired * 50;
     int time_penalty = current_score.game_time_seconds * 10;
@@ -118,35 +178,44 @@ void draw_live_score() {
         live_score = 100;
     }
     
-    // Draw "SCORE:"
-    // For now, just draw the numbers
-    draw_number(live_score, score_x, score_y, digit_spacing);
+    int margin = 20;
+    int top_y = margin;
     
-    // Optionally draw other stats
-    // Bullets fired at top right
-    int bullets_x = mode_info.XResolution - 200;
-    draw_number(current_score.bullets_fired, bullets_x, score_y, digit_spacing);
+    // Left: Score
+    draw_label_and_number("SCORE ", live_score, margin, top_y);
     
-    // Time at top center
-    int time_x = (mode_info.XResolution / 2) - 50;
-    draw_number(current_score.game_time_seconds, time_x, score_y, digit_spacing);
+    // Center: Time
+    int center_x = mode_info.XResolution / 2;
+    draw_label_and_number_centered("TIME ", current_score.game_time_seconds, center_x, top_y);
+    
+    // Right: Shots
+    char shots_text[] = "SHOTS ";
+    char shots_num[12];
+    sprintf(shots_num, "%d", current_score.bullets_fired);
+    int shots_total_width = calculate_text_width(shots_text) + (strlen(shots_num) * CHAR_SPACING);
+    int shots_x = mode_info.XResolution - shots_total_width - margin;
+    draw_label_and_number(shots_text, current_score.bullets_fired, shots_x, top_y);
 }
 
+// Draw final score screen
 void draw_final_score_display() {
     int center_x = mode_info.XResolution / 2;
     int center_y = mode_info.YResolution / 2;
-    int digit_spacing = 30;
+    int line_spacing = CHAR_HEIGHT + 15;
     
-    // Draw final score (centered)
-    int score_width = 6 * digit_spacing; // Estimate width for centering
-    int final_score_x = center_x - (score_width / 2);
-    draw_number(current_score.final_score, final_score_x, center_y - 50, digit_spacing);
+    int start_y = center_y - line_spacing;
     
-    // Draw bullets fired below
-    draw_number(current_score.bullets_fired, final_score_x, center_y, digit_spacing);
+    draw_label_and_number_centered("FINAL SCORE ", current_score.final_score, center_x, start_y);
+    draw_label_and_number_centered("TIME ", current_score.game_time_seconds, center_x, start_y + line_spacing);
+    draw_label_and_number_centered("SHOTS FIRED ", current_score.bullets_fired, center_x, start_y + (line_spacing * 2));
     
-    // Draw time below that
-    draw_number(current_score.game_time_seconds, final_score_x, center_y + 50, digit_spacing);
+    // Show efficiency percentage
+    if (current_score.bullets_fired > 0) {
+        int efficiency = (current_score.final_score * 100) / 10000;
+        if (efficiency > 100) efficiency = 100;
+        draw_label_and_number_centered("EFFICIENCY ", efficiency, center_x, start_y + (line_spacing * 3));
+        draw_text_centered("PERCENT", center_x, start_y + (line_spacing * 3) + CHAR_HEIGHT + 5);
+    }
 }
 
 int score_state() {
@@ -162,7 +231,6 @@ int score_state() {
         if (is_ipc_notify(ipc_status)) {
             switch (_ENDPOINT_P(msg.m_source)) {
                 case HARDWARE:
-                    // keyboard
                     if (msg.m_notify.interrupts & BIT(irq_set_keyboard)) {
                         kbc_ih();
                         

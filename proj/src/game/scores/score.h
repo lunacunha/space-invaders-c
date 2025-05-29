@@ -28,8 +28,16 @@ void score_update_time(int timer_ticks);
 int score_calculate_final();
 void score_reset();
 
+void draw_letter(char letter, int x, int y);
+void draw_text(const char* text, int x, int y);
+int calculate_text_width(const char* text);
+void draw_text_centered(const char* text, int center_x, int y);
+
 void draw_digit(int digit, int x, int y);
-void draw_number(int number, int x, int y, int digit_spacing);
+int draw_number(int number, int x, int y);
+void draw_label_and_number(const char* label, int number, int x, int y);
+void draw_label_and_number_centered(const char* label, int number, int center_x, int y);
+
 void draw_live_score();
 void draw_final_score_display();
 
