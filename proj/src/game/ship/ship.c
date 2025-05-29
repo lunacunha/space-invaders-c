@@ -1,4 +1,5 @@
 #include "ship.h"
+
 uint16_t x = 350;
 int ship_width = 50; 
 int ship_height = 50;
@@ -6,7 +7,16 @@ int bullet_width = 50;
 int bullet_height = 30;
 extern vbe_mode_info_t mode_info;
 extern uint8_t scancode;
+extern uint8_t data;
 int fire_delay_counter = 150;
+
+// Mouse state variables
+static uint8_t mouse_packet_buf[3];
+static uint8_t mouse_packet_index = 0;
+static struct packet mouse_packet;
+static int mouse_x = 400; // Current mouse X position (screen coordinates)
+static bool left_button_pressed = false;
+static bool prev_left_button = false;
 
 int draw_ship(uint16_t x) {
     if (print_xpm(ship, x, 700) != 0) return 1;
@@ -39,10 +49,66 @@ void init_shields() {
     }
 }
 
+void handle_mouse_input() {
+    // Store the mouse byte in the packet buffer
+    mouse_packet_buf[mouse_packet_index] = data;
+    mouse_packet_index++;
+    
+    // Check if we have a complete packet (3 bytes)
+    if (mouse_packet_index == 3) {
+        // Validate first byte (bit 3 should always be 1)
+        if (!(mouse_packet_buf[0] & PK_BIT3)) {
+            // Invalid packet, reset and try again
+            mouse_packet_index = 0;
+            return;
+        }
+        
+        // Parse the complete packet
+        mouse_parse_packet(&mouse_packet, mouse_packet_buf, 3);
+        
+        // Update mouse position based on movement
+        mouse_x += mouse_packet.delta_x;
+        
+        // Clamp mouse position to screen bounds
+        if (mouse_x < ship_width/2) {
+            mouse_x = ship_width/2;
+        } else if (mouse_x > mode_info.XResolution - ship_width/2) {
+            mouse_x = mode_info.XResolution - ship_width/2;
+        }
+        
+        // Update ship position to follow mouse
+        x = mouse_x - ship_width/2;
+        
+        // Handle mouse click for firing
+        prev_left_button = left_button_pressed;
+        left_button_pressed = mouse_packet.lb;
+        
+        // Fire on left button press (not while held)
+        if (left_button_pressed && !prev_left_button) {
+            if (fire_delay_counter >= 10) { // Reduced delay for mouse firing
+                for (int i = 0; i < MAX_BULLETS; i++) {
+                    if (!bullets[i].active) { 
+                        bullets[i].x = x + ship_width/2 - 2; // Center the bullet
+                        bullets[i].y = 700 - BULLET_HEIGHT;   
+                        bullets[i].active = true;
+                        break;
+                    }
+                }
+                fire_delay_counter = 0;
+            }
+        }
+        
+        // Reset packet index for next packet
+        mouse_packet_index = 0;
+    }
+}
+
 void ship_action() {
+    // Keep keyboard controls for compatibility
     if (scancode == KB_A) { // 'A' key (make code)
         if (x > ship_width) { 
             x -= 30; 
+            mouse_x = x + ship_width/2; // Update mouse position to match
         }
         printf("Left key pressed, x: %d\n", x);
     } 
@@ -51,6 +117,7 @@ void ship_action() {
         if (x > mode_info.XResolution - ship_width) { 
             x = mode_info.XResolution - ship_width;
         }
+        mouse_x = x + ship_width/2; // Update mouse position to match
     } 
     else if (scancode == KB_SPACE) { 
         if (fire_delay_counter >= 30) {
@@ -65,7 +132,6 @@ void ship_action() {
             fire_delay_counter = 0;
         }
     }
-    
 }
 
 void fire_enemy_bullet() {
@@ -169,4 +235,3 @@ void update_enemy_bullets() {
         }
     }
 }
-

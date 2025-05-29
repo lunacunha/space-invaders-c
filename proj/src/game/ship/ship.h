@@ -4,6 +4,7 @@
 #include <lcom/lcf.h>
 #include "src/controllers/graphics/graphic.h"
 #include "src/controllers/keyboard/kb_controller.h"
+#include "src/controllers/mouse/mouse.h"
 #include "src/xpm/game/player.h"
 #include "src/xpm/messages.h"
 #include "src/game/enemies/enemies.h"
@@ -46,7 +47,6 @@ typedef struct {
     ShieldState state;  
 } Shield;
 
-
 Bullet bullets[MAX_BULLETS];
 EnemyBullet enemy_bullets[MAX_ENEMY_BULLETS];
 Shield shields[NUM_SHIELDS];
@@ -60,6 +60,8 @@ void (init_enemy_bullets)();
 void (init_shields)();
 
 void (ship_action)();
+
+void (handle_mouse_input)();
 
 void (fire_enemy_bullet)();
 
