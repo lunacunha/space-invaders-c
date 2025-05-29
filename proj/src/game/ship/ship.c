@@ -59,13 +59,16 @@ void ship_action() {
                     bullets[i].x = x + ship_width/2 - 2; // Center the bullet
                     bullets[i].y = 700 - BULLET_HEIGHT;   
                     bullets[i].active = true;
+                    
+                    // ADD THIS LINE: Track bullet fired for scoring
+                    score_add_bullet();
+                    
                     break;
                 }
             }
             fire_delay_counter = 0;
         }
     }
-    
 }
 
 void fire_enemy_bullet() {

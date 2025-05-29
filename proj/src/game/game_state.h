@@ -13,6 +13,7 @@
 #include "ship/ship.h"
 #include "enemies/enemies.h"
 #include "menu/menu.h"
+#include "scores/score.h"
 
 int (check_bullet_enemy_collision)();
 

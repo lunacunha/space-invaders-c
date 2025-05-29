@@ -118,6 +118,9 @@ int game_state() {
     int ipc_st;
     message msg;
     
+    // Initialize scoring when game starts
+    score_init();
+    
     while (scancode != KB_BREAK_ESC) {
         if (driver_receive(ANY, &msg, &ipc_st)) {   
             printf("Error: driver_receive failed with: %d", ipc_st);
@@ -134,13 +137,16 @@ int game_state() {
                         bool is_break = scancode & KB_BREAK_CODE; 
 
                         if (!is_break) { 
-                            ship_action(); // This now only updates position/shoots, no drawing
+                            ship_action(); // This now tracks bullets fired
                         }
                     }
                     // timer
                     if (msg.m_notify.interrupts & BIT(irq_set_timer)) {   
                         timer_int_handler();  
                         fire_delay_counter++;
+                        
+                        // UPDATE SCORE TIME
+                        score_update_time(timer_counter);
                         
                         // Clear the entire back buffer first
                         clear_back_buf(0x000000);
@@ -150,7 +156,7 @@ int game_state() {
                         update_enemy_bullets();
                         enemies_moving();
 
-                        if (timer_counter % 60 == 0) { // Fire every 120 frames
+                        if (timer_counter % 60 == 0) { // Fire every 60 frames
                             printf("fire\n");
                             fire_enemy_bullet();
                         }
@@ -175,6 +181,7 @@ int game_state() {
 
                         // Check if the player has lost
                         if (player_lost) {
+                            score_calculate_final(); // Calculate final score
                             menu_set_state(MENU_SCORES);
                             return 0; // Exit game loop on player loss
                         }
@@ -182,11 +189,10 @@ int game_state() {
                         // Check win condition
                         if (count_active_enemies() == 0) {
                             player_win = true;
+                            score_calculate_final(); // Calculate final score
                             menu_set_state(MENU_SCORES);
                             return 0;
                         }
-
-                        
                     }
                     break;
 
@@ -195,6 +201,7 @@ int game_state() {
             }
         }
     }
+    score_reset(); // Reset score when exiting to menu
     menu_set_state(MENU_MAIN);
     return 0;
 }

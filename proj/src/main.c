@@ -115,34 +115,49 @@ int menu_handler() {
                             init_shields();
                             if (game_state() != 0) return 1;
                         } else if (state == MENU_SCORES) {
-                            if (!show_scores_drawn) {
-                                if (vg_draw_rectangle(0, 0, mode_info.XResolution, mode_info.YResolution, 0x000000)) return 1;
+    if (!show_scores_drawn) {
+        if (vg_draw_rectangle(0, 0, mode_info.XResolution, mode_info.YResolution, 0x000000)) return 1;
 
-                                if (!player_win && !player_lost) {
-                                    if (print_xpm(score_board, 300, 100)) return 1;
-                                    if (print_xpm(cursor, 400, 300)) return 1;
-                                    if (print_xpm(message1, 300, 500)) return 1;
-                                } else if (player_win) {
-                                    if (print_xpm(message3, 400, 300)) return 1;
-                                    if (print_xpm(message2, 300, 400)) return 1;
-                                    if (print_xpm(message1, 300, 500)) return 1;
-                                } else if (player_lost) {
-                                    if (print_xpm(message4, 400, 300)) return 1;
-                                    if (print_xpm(message1, 300, 500)) return 1;
-                                }
+        if (!player_win && !player_lost) {
+            if (print_xpm(score_board, 300, 100)) return 1;
+            if (print_xpm(cursor, 400, 300)) return 1;
+            if (print_xpm(message1, 300, 500)) return 1;
+        } else if (player_win) {
+            if (print_xpm(message3, 400, 200)) return 1;  // "YOU WIN"
+            
+            // Display score information
+            printf("=== GAME STATISTICS ===\n");
+            printf("Bullets Fired: %d\n", current_score.bullets_fired);
+            printf("Game Time: %d seconds\n", current_score.game_time_seconds);
+            printf("Final Score: %d\n", current_score.final_score);
+            
+            if (print_xpm(message2, 300, 300)) return 1;  // Additional message
+            if (print_xpm(message1, 300, 500)) return 1;  // "Press ESC"
+        } else if (player_lost) {
+            if (print_xpm(message4, 400, 200)) return 1;  // "GAME OVER"
+            
+            // Display score information
+            printf("=== GAME STATISTICS ===\n");
+            printf("Bullets Fired: %d\n", current_score.bullets_fired);
+            printf("Game Time: %d seconds\n", current_score.game_time_seconds);
+            printf("Final Score: %d\n", current_score.final_score);
+            
+            if (print_xpm(message1, 300, 500)) return 1;  // "Press ESC"
+        }
 
-                                swap_buffers();
-                                show_scores_drawn = true;
-                            }
+        swap_buffers();
+        show_scores_drawn = true;
+    }
 
-                            if (score_state() != 0) return 1;
+    if (score_state() != 0) return 1;
 
-                            // reset state
-                            player_win = false;
-                            player_lost = false;
-                            show_scores_drawn = false;
-                            menu_set_state(MENU_MAIN);
-                        } else if (state == MENU_EXIT) {
+    // reset state
+    player_win = false;
+    player_lost = false;
+    show_scores_drawn = false;
+    score_reset(); // Reset score when returning to menu
+    menu_set_state(MENU_MAIN);
+} else if (state == MENU_EXIT) {
                             return 0;
                         } else {
                             menu_render();

@@ -8,6 +8,7 @@
 #include "src/xpm/messages.h"
 #include "src/game/enemies/enemies.h"
 #include "src/xpm/game/shields.h"
+#include "src/game/scores/score.h"
 
 #define FREQUENCY 60
 #define MODE 0x14c
