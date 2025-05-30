@@ -119,7 +119,6 @@ int menu_handler() {
         if (vg_draw_rectangle(0, 0, mode_info.XResolution, mode_info.YResolution, 0x000000)) return 1;
 
         if (!player_win && !player_lost) {
-            if (print_xpm(score_board, 300, 100)) return 1;
             if (print_xpm(cursor, 400, 300)) return 1;
             if (print_xpm(message1, 300, 500)) return 1;
         } else if (player_win) {
