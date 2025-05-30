@@ -118,6 +118,10 @@ int game_state() {
     int ipc_st;
     message msg;
     
+    // RESET GAME STATE VARIABLES when starting new game
+    player_lost = false;
+    player_win = false;
+    
     // Initialize scoring when game starts
     score_init();
     
@@ -180,22 +184,19 @@ int game_state() {
                         
                         // Swap buffers once per frame
                         swap_buffers();
-                        
-                        // Swap buffers once per frame
-                        swap_buffers();
 
-                        // Check if the player has lost
+                        // MODIFIED: Check if the player has lost
                         if (player_lost) {
-                            score_calculate_final(); // Calculate final score
-                            menu_set_state(MENU_SCORES);
+                            score_calculate_final(); // Still calculate final score
+                            menu_set_state(MENU_GAME_OVER); // NEW: Set to game over instead of scores
                             return 0; // Exit game loop on player loss
                         }
                         
                         // Check win condition
                         if (count_active_enemies() == 0) {
                             player_win = true;
-                            score_calculate_final(); // Calculate final score
-                            menu_set_state(MENU_SCORES);
+                            score_calculate_final();
+                            menu_set_state(MENU_SCORES); // Winners still see scores
                             return 0;
                         }
                     }

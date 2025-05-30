@@ -44,6 +44,12 @@ void menu_handle_input() {
             default:
                 break;
         }
+    } else if (current_state == MENU_GAME_OVER) {
+        // NEW: Handle input in game over state
+        if (scancode == KB_ENTER || scancode == KB_BREAK_ESC) {
+            current_state = MENU_MAIN;
+            option_selected = false;
+        }
     } else if (scancode == KB_BREAK_ESC) {
         // Volta ao menu principal
         current_state = MENU_MAIN;
@@ -113,6 +119,19 @@ void menu_render() {
             print_xpm(score_board, score_x, score_y);*/
             break;
         }
+        
+        case MENU_GAME_OVER: {
+            // NEW: Display "YOU LOST!" message
+            uint16_t center_x = screen_width / 2;
+            uint16_t center_y = screen_height / 2;
+            
+            // Display "YOU LOST!" text using your text drawing functions
+            draw_text_centered("YOU LOST", center_x, center_y - 50);
+            
+            // Show instruction to continue
+            draw_text_centered("PRESS ENTER OR ESC TO CONTINUE", center_x, center_y + 50);
+            break;
+        }
             
         case MENU_QUIT:
             current_state = MENU_EXIT;
@@ -134,3 +153,4 @@ void menu_set_state(MenuState state) {
     current_state = state;
     option_selected = false;
 }
+

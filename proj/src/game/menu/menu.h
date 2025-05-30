@@ -1,7 +1,6 @@
 #ifndef MENU_H
 #define MENU_H
 
-
 #include <lcom/lcf.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -20,6 +19,7 @@ typedef enum {
     MENU_MAIN,
     MENU_START,
     MENU_SCORES,
+    MENU_GAME_OVER,  // NEW: Game over state
     MENU_QUIT,
     MENU_EXIT
 } MenuState;
@@ -34,12 +34,10 @@ typedef enum {
     MENU_OPTION_NONE
 } MenuOption;
 
-
 void (menu_init)();
 void (menu_handle_input)();
 void (menu_render)();
 MenuState (menu_get_state)();
-
 void (menu_set_state)(MenuState state);
 
 #endif
