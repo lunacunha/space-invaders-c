@@ -73,6 +73,11 @@ int init_game() {
     if (set_graphical_mode(MODE)) return 1;
     if ((kb_subscribe_int)(&irq_set_keyboard)) return 1;
     if ((timer_subscribe_int)(&irq_set_timer)) return 1;
+    
+    // Initialize high scores system
+    printf("Loading high scores...\n");
+    load_highscores_from_csv();
+    
     menu_init();
     return 0;
 }
@@ -179,4 +184,3 @@ int (proj_main_loop)(int argc, char *argv[]) {
     if (menu_handler() != 0) return 1;
     return close_game();
 }
-

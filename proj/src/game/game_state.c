@@ -188,7 +188,7 @@ int game_state() {
                         // MODIFIED: Check if the player has lost
                         if (player_lost) {
                             score_calculate_final(); // Still calculate final score
-                            menu_set_state(MENU_GAME_OVER); // NEW: Set to game over instead of scores
+                            menu_set_state(MENU_GAME_OVER); // Set to game over instead of scores
                             return 0; // Exit game loop on player loss
                         }
                         
@@ -196,7 +196,12 @@ int game_state() {
                         if (count_active_enemies() == 0) {
                             player_win = true;
                             score_calculate_final();
-                            menu_set_state(MENU_SCORES); // Winners still see scores
+                            
+                            // FIXED: Call the dedicated save function
+                            printf("Player won! Calling save_win_highscore()...\n");
+                            save_win_highscore();
+                            
+                            menu_set_state(MENU_SCORES);
                             return 0;
                         }
                     }

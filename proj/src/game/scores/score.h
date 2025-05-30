@@ -6,15 +6,28 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdlib.h>
+#include <time.h>
 #include "../../controllers/keyboard/kb_interrupts.h"
 #include "../../controllers/graphics/graphic.h"
 #include "../menu/menu.h"
+
+#define MAX_NAME_LENGTH 20
+#define CSV_FILENAME "highscores.csv"
+#define MAX_HIGHSCORES 100
 
 typedef struct {
     int bullets_fired;
     int game_time_seconds;
     int final_score;
 } GameScore;
+
+typedef struct {
+    char name[MAX_NAME_LENGTH];
+    int score;
+    int bullets_fired;
+    int game_time_seconds;
+} HighScoreEntry;
 
 // Global score variables
 extern GameScore current_score;
@@ -27,6 +40,12 @@ void score_add_bullet();
 void score_update_time(int timer_ticks);
 int score_calculate_final();
 void score_reset();
+
+// High score functions
+char* get_random_anime_name();
+int save_highscore_to_csv(const char* name, int score, int bullets, int time);
+int load_highscores_from_csv();
+void save_win_highscore(); // NEW: Function to call when player wins
 
 void draw_letter(char letter, int x, int y);
 void draw_text(const char* text, int x, int y);
