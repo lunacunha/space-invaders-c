@@ -25,6 +25,8 @@
 #define SHIELD_WIDTH 47
 #define SHIELD_HEIGHT 34
 
+#define PK_BIT3 BIT(3)
+
 typedef struct {
     int x;         
     int y;          
