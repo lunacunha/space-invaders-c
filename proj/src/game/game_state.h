@@ -23,6 +23,8 @@ void (check_ship_alien_collision)();
 
 void (check_shield_collision)();
 
+void (enemies_moving)();
+
 int (game_state)(); 
 
 #endif

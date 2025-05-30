@@ -11,6 +11,7 @@
 #include "src/game/enemies/enemies.h"
 #include "src/game/ship/ship.h"
 #include "src/controllers/graphics/graphic.h"
+#include "src/game/scores/score.h"
 
 /**
  * @brief Estados possíveis do menu
@@ -19,7 +20,7 @@ typedef enum {
     MENU_MAIN,
     MENU_START,
     MENU_SCORES,
-    MENU_GAME_OVER,  // NEW: Game over state
+    MENU_GAME_OVER,  // Game over state
     MENU_QUIT,
     MENU_EXIT
 } MenuState;

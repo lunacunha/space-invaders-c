@@ -45,7 +45,7 @@ void menu_handle_input() {
                 break;
         }
     } else if (current_state == MENU_GAME_OVER) {
-        // NEW: Handle input in game over state
+        // Handle input in game over state
         if (scancode == KB_ENTER || scancode == KB_BREAK_ESC) {
             current_state = MENU_MAIN;
             option_selected = false;
@@ -119,7 +119,7 @@ void menu_render() {
         }
         
         case MENU_GAME_OVER: {
-            // NEW: Display "YOU LOST!" message
+            // Display "YOU LOST!" message
             uint16_t center_x = screen_width / 2;
             uint16_t center_y = screen_height / 2;
             
@@ -151,4 +151,3 @@ void menu_set_state(MenuState state) {
     current_state = state;
     option_selected = false;
 }
-

@@ -18,6 +18,40 @@ static xpm_map_t letters[] = {
     A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z
 };
 
+// Anime character names from Samurai Champloo and Cowboy Bebop
+static const char* anime_names[] = {
+    // Samurai Champloo characters
+    "MUGEN",
+    "JIN", 
+    "FUU",
+    "SARA",
+    "SHIREN",
+    "YUKIMARU",
+    "KOZA",
+    "UMANOSUKE",
+    "KARIYA",
+    "OKURU",
+    
+    // Cowboy Bebop characters
+    "SPIKE",
+    "JET",
+    "FAYE",
+    "EDWARD",
+    "VICIOUS",
+    "JULIA",
+    "GREN",
+    "PIERCE",
+    "RHINT",
+    "ASIMOV",
+    "KATERINA",
+    "ROCO",
+    "MILES",
+    "ZEBRA",
+    "RASHID",
+    "UDAI"
+};
+
+#define NUM_ANIME_NAMES (sizeof(anime_names) / sizeof(anime_names[0]))
 #define CHAR_WIDTH 20    
 #define CHAR_HEIGHT 25   
 #define CHAR_SPACING 22  
@@ -83,6 +117,70 @@ void score_reset() {
     current_score.final_score = 0;
     game_start_time = 0;
     game_active = false;
+}
+
+char* get_random_anime_name() {
+    static bool seeded = false;
+    if (!seeded) {
+        srand(time(NULL));
+        seeded = true;
+    }
+    
+    int index = rand() % NUM_ANIME_NAMES;
+    return (char*)anime_names[index];
+}
+
+int save_highscore_to_csv(const char* name, int score, int bullets, int time) {
+    FILE* file = fopen(CSV_FILENAME, "a"); // Append mode
+    if (file == NULL) {
+        // Try to create the file with header if it doesn't exist
+        file = fopen(CSV_FILENAME, "w");
+        if (file == NULL) {
+            printf("Error: Could not create highscores file\n");
+            return -1;
+        }
+        // Write CSV header
+        fprintf(file, "Name,Score,Bullets_Fired,Game_Time_Seconds\n");
+    }
+    
+    // Write the highscore entry
+    fprintf(file, "%s,%d,%d,%d\n", name, score, bullets, time);
+    
+    fclose(file);
+    printf("Highscore saved: %s - %d points\n", name, score);
+    return 0;
+}
+
+int load_highscores_from_csv() {
+    FILE* file = fopen(CSV_FILENAME, "r");
+    if (file == NULL) {
+        printf("No highscores file found, will create on first save\n");
+        return 0;
+    }
+    
+    char line[256];
+    int count = 0;
+    
+    // Skip header line
+    if (fgets(line, sizeof(line), file) == NULL) {
+        fclose(file);
+        return 0;
+    }
+    
+    printf("=== HIGH SCORES ===\n");
+    while (fgets(line, sizeof(line), file) && count < MAX_HIGHSCORES) {
+        char name[MAX_NAME_LENGTH];
+        int score, bullets, time;
+        
+        if (sscanf(line, "%19[^,],%d,%d,%d", name, &score, &bullets, &time) == 4) {
+            printf("%d. %s - %d points (%d bullets, %d seconds)\n", 
+                   count + 1, name, score, bullets, time);
+            count++;
+        }
+    }
+    
+    fclose(file);
+    return count;
 }
 
 // Draw single letter at position
@@ -220,25 +318,48 @@ void draw_final_score_display() {
     int line_spacing = CHAR_HEIGHT + 15;
     
     // Start higher to accommodate "YOU WON" message
-    int start_y = center_y - (line_spacing * 2);
+    int start_y = center_y - (line_spacing * 3);
     
     // Display "YOU WON" at the top
     draw_text_centered("YOU WON", center_x, start_y);
     
+    // Get random name and save to CSV (only if this is a fresh win)
+    static bool score_saved = false;
+    static char assigned_name[MAX_NAME_LENGTH] = "";
+    
+    if (!score_saved) {
+        char* player_name = get_random_anime_name();
+        strcpy(assigned_name, player_name);
+        save_highscore_to_csv(player_name, current_score.final_score, 
+                             current_score.bullets_fired, current_score.game_time_seconds);
+        score_saved = true;
+    }
+    
+    // Display player name
+    draw_text_centered("PILOT", center_x - 60, start_y + line_spacing);
+    draw_text_centered(assigned_name, center_x + 60, start_y + line_spacing);
+    
     // Display the scores below
-    draw_label_and_number_centered("FINAL SCORE ", current_score.final_score, center_x, start_y + line_spacing);
-    draw_label_and_number_centered("TIME ", current_score.game_time_seconds, center_x, start_y + (line_spacing * 2));
-    draw_label_and_number_centered("SHOTS FIRED ", current_score.bullets_fired, center_x, start_y + (line_spacing * 3));
-
-        draw_text_centered("PRESS ENTER", center_x, start_y);
+    draw_label_and_number_centered("FINAL SCORE ", current_score.final_score, center_x, start_y + (line_spacing * 2));
+    draw_label_and_number_centered("TIME ", current_score.game_time_seconds, center_x, start_y + (line_spacing * 3));
+    draw_label_and_number_centered("SHOTS FIRED ", current_score.bullets_fired, center_x, start_y + (line_spacing * 4));
     
     // Show efficiency percentage
     if (current_score.bullets_fired > 0) {
         int efficiency = (current_score.final_score * 100) / 10000;
         if (efficiency > 100) efficiency = 100;
-        draw_label_and_number_centered("EFFICIENCY ", efficiency, center_x, start_y + (line_spacing * 4));
+        draw_label_and_number_centered("EFFICIENCY ", efficiency, center_x, start_y + (line_spacing * 5));
+    }
+    
+    draw_text_centered("PRESS ENTER", center_x, start_y + (line_spacing * 6));
+    
+    // Reset the flag when returning to menu
+    if (scancode == KB_ENTER || scancode == KB_BREAK_ESC) {
+        score_saved = false;
+        assigned_name[0] = '\0';
     }
 }
+
 int score_state() {
     int ipc_status;
     message msg;

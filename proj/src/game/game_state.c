@@ -196,7 +196,13 @@ int game_state() {
                         if (count_active_enemies() == 0) {
                             player_win = true;
                             score_calculate_final();
-                            menu_set_state(MENU_SCORES); // Winners still see scores
+                            
+                            // Save high score with random anime name
+                            char* winner_name = get_random_anime_name();
+                            save_highscore_to_csv(winner_name, current_score.final_score, 
+                                                 current_score.bullets_fired, current_score.game_time_seconds);
+                            
+                            menu_set_state(MENU_SCORES);
                             return 0;
                         }
                     }
