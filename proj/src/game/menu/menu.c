@@ -114,9 +114,7 @@ void menu_render() {
             /*uint16_t score_width = 195;   // Based on your XPM comment "195 51"
             uint16_t score_height = 51;   // Based on your XPM comment "195 51"
             uint16_t score_x = (screen_width - score_width) / 2;
-            uint16_t score_y = (screen_height - score_height) / 2;
-            
-            print_xpm(score_board, score_x, score_y);*/
+            uint16_t score_y = (screen_height - score_height) / 2;*/
             break;
         }
         
