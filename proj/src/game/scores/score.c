@@ -229,13 +229,14 @@ void draw_final_score_display() {
     draw_label_and_number_centered("FINAL SCORE ", current_score.final_score, center_x, start_y + line_spacing);
     draw_label_and_number_centered("TIME ", current_score.game_time_seconds, center_x, start_y + (line_spacing * 2));
     draw_label_and_number_centered("SHOTS FIRED ", current_score.bullets_fired, center_x, start_y + (line_spacing * 3));
+
+        draw_text_centered("PRESS ENTER", center_x, start_y);
     
     // Show efficiency percentage
     if (current_score.bullets_fired > 0) {
         int efficiency = (current_score.final_score * 100) / 10000;
         if (efficiency > 100) efficiency = 100;
         draw_label_and_number_centered("EFFICIENCY ", efficiency, center_x, start_y + (line_spacing * 4));
-        draw_text_centered("PERCENT", center_x, start_y + (line_spacing * 4) + CHAR_HEIGHT + 5);
     }
 }
 int score_state() {
