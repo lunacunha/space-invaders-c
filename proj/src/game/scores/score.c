@@ -197,27 +197,71 @@ void draw_live_score() {
     draw_label_and_number(shots_text, current_score.bullets_fired, shots_x, top_y);
 }
 
+// Draw single letter at 2x scale
+void draw_letter_2x(char letter, int x, int y) {
+    if (letter >= 'A' && letter <= 'Z') {
+        // Draw the letter 4 times in a 2x2 pattern for 2x scale
+        print_xpm(letters[letter - 'A'], x, y);
+        print_xpm(letters[letter - 'A'], x + CHAR_WIDTH, y);
+        print_xpm(letters[letter - 'A'], x, y + CHAR_HEIGHT);
+        print_xpm(letters[letter - 'A'], x + CHAR_WIDTH, y + CHAR_HEIGHT);
+    } else if (letter >= 'a' && letter <= 'z') {
+        print_xpm(letters[letter - 'a'], x, y);
+        print_xpm(letters[letter - 'a'], x + CHAR_WIDTH, y);
+        print_xpm(letters[letter - 'a'], x, y + CHAR_HEIGHT);
+        print_xpm(letters[letter - 'a'], x + CHAR_WIDTH, y + CHAR_HEIGHT);
+    }
+}
+
+// Draw text at 2x scale
+void draw_text_2x(const char* text, int x, int y) {
+    int current_x = x;
+    int spacing_2x = CHAR_SPACING * 2;
+    
+    for (int i = 0; text[i] != '\0'; i++) {
+        if (text[i] == ' ') {
+            current_x += spacing_2x;
+        } else {
+            draw_letter_2x(text[i], current_x, y);
+            current_x += spacing_2x;
+        }
+    }
+}
+
+// Draw text centered at 2x scale
+void draw_text_centered_2x(const char* text, int center_x, int y) {
+    int text_width = strlen(text) * (CHAR_SPACING * 2);
+    int start_x = center_x - (text_width / 2);
+    draw_text_2x(text, start_x, y);
+}
+
 // Draw final score screen
 void draw_final_score_display() {
     int center_x = mode_info.XResolution / 2;
     int center_y = mode_info.YResolution / 2;
     int line_spacing = CHAR_HEIGHT + 15;
+    int big_text_height = CHAR_HEIGHT * 2;
     
-    int start_y = center_y - line_spacing;
+    // Start higher to accommodate bigger "YOU WON" message
+    int start_y = center_y - (line_spacing * 2) - big_text_height/2;
     
-    draw_label_and_number_centered("FINAL SCORE ", current_score.final_score, center_x, start_y);
-    draw_label_and_number_centered("TIME ", current_score.game_time_seconds, center_x, start_y + line_spacing);
-    draw_label_and_number_centered("SHOTS FIRED ", current_score.bullets_fired, center_x, start_y + (line_spacing * 2));
+    // Display "YOU WON" at 2x size at the top
+    draw_text_centered_2x("YOU WON", center_x, start_y);
+    
+    // Display the scores below with extra spacing after big text
+    int scores_start_y = start_y + big_text_height + line_spacing;
+    draw_label_and_number_centered("FINAL SCORE ", current_score.final_score, center_x, scores_start_y);
+    draw_label_and_number_centered("TIME ", current_score.game_time_seconds, center_x, scores_start_y + line_spacing);
+    draw_label_and_number_centered("SHOTS FIRED ", current_score.bullets_fired, center_x, scores_start_y + (line_spacing * 2));
     
     // Show efficiency percentage
     if (current_score.bullets_fired > 0) {
         int efficiency = (current_score.final_score * 100) / 10000;
         if (efficiency > 100) efficiency = 100;
-        draw_label_and_number_centered("EFFICIENCY ", efficiency, center_x, start_y + (line_spacing * 3));
-        draw_text_centered("PERCENT", center_x, start_y + (line_spacing * 3) + CHAR_HEIGHT + 5);
+        draw_label_and_number_centered("EFFICIENCY ", efficiency, center_x, scores_start_y + (line_spacing * 3));
+        draw_text_centered("PERCENT", center_x, scores_start_y + (line_spacing * 3) + CHAR_HEIGHT + 5);
     }
 }
-
 int score_state() {
     int ipc_status;
     message msg;
