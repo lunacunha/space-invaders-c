@@ -1,107 +1,177 @@
 shield_y: 614
+Score system initialized. Start time: 10
+Left key pressed, x: 320
+Left key pressed, x: 290
+Bullet fired! Total: 1
+Enemy hit! Bullet (313,230) hit enemy (320,210)
+fire
+Enemy 1 fired bullet from (240, 90)
+Left key pressed, x: 350
+Left key pressed, x: 320
+Left key pressed, x: 290
 Left key pressed, x: 320
 Left key pressed, x: 290
 Left key pressed, x: 260
+Bullet fired! Total: 2
 fire
-Enemy 5 fired bullet from (640, 90)
-Left key pressed, x: 350
-Left key pressed, x: 500
-fire
-Enemy 16 fired bullet from (580, 250)
-Left key pressed, x: 470
-Left key pressed, x: 440
-Left key pressed, x: 410
-Left key pressed, x: 380
-Left key pressed, x: 350
-fire
-Enemy 2 fired bullet from (420, 90)
+Enemy 3 fired bullet from (480, 90)
+Enemy hit! Bullet (283,230) hit enemy (280,210)
 Left key pressed, x: 320
 Left key pressed, x: 290
+Left key pressed, x: 260
+Bullet fired! Total: 3
+Left key pressed, x: 320
 fire
-Enemy 12 fired bullet from (260, 250)
-Left key pressed, x: 470
-Left key pressed, x: 440
-Left key pressed, x: 410
+Enemy 10 fired bullet from (620, 170)
+Bullet fired! Total: 4
+Left key pressed, x: 320
+Left key pressed, x: 290
+Enemy hit! Bullet (343,150) hit enemy (320,130)
+Left key pressed, x: 260
+Left key pressed, x: 260
+Bullet fired! Total: 5
 fire
-Enemy 2 fired bullet from (500, 90)
-Enemy hit! Bullet (523,230) hit enemy (500,210)
-Left key pressed, x: 530
-Left key pressed, x: 500
-Enemy hit! Bullet (553,150) hit enemy (520,130)
-Left key pressed, x: 470
+Enemy 15 fired bullet from (560, 250)
+Enemy hit! Bullet (283,230) hit enemy (260,210)
+Left key pressed, x: 380
+Left key pressed, x: 350
+Left key pressed, x: 320
+Left key pressed, x: 290
+Bullet fired! Total: 6
+fire
+Enemy 15 fired bullet from (600, 250)
+Enemy hit! Bullet (313,150) hit enemy (300,130)
+Left key pressed, x: 620
 fire
 Enemy 17 fired bullet from (840, 250)
-Left key pressed, x: 440
-Left key pressed, x: 410
-Enemy hit! Bullet (433,230) hit enemy (440,210)
-Left key pressed, x: 380
+Bullet fired! Total: 7
+Enemy hit! Bullet (643,230) hit enemy (640,210)
+Left key pressed, x: 650
+Left key pressed, x: 620
+Left key pressed, x: 590
+Bullet fired! Total: 8
 fire
-Enemy 12 fired bullet from (380, 250)
-Enemy hit! Bullet (403,150) hit enemy (380,130)
+Enemy 8 fired bullet from (580, 170)
+Enemy hit! Bullet (613,70) hit enemy (580,50)
+Left key pressed, x: 650
+Left key pressed, x: 620
+Left key pressed, x: 590
+Bullet fired! Total: 9
+fire
+Enemy 10 fired bullet from (820, 170)
+Enemy hit! Bullet (613,150) hit enemy (600,130)
+Bullet fired! Total: 10
+fire
+Enemy 3 fired bullet from (760, 90)
+Enemy hit! Bullet (883,210) hit enemy (860,210)
+Bullet fired! Total: 11
+fire
+Enemy 5 fired bullet from (1000, 90)
+Left key pressed, x: 980
+Left key pressed, x: 950
+Left key pressed, x: 920
+Enemy hit! Bullet (1033,230) hit enemy (1000,210)
+Left key pressed, x: 890
+Left key pressed, x: 860
+Bullet fired! Total: 12
+fire
+Enemy 9 fired bullet from (840, 170)
+Left key pressed, x: 920
+Left key pressed, x: 890
+Left key pressed, x: 860
+Bullet fired! Total: 13
+fire
+Enemy 5 fired bullet from (1080, 90)
+Enemy hit! Bullet (883,150) hit enemy (860,130)
+Bullet fired! Total: 14
+Left key pressed, x: 980
+Left key pressed, x: 950
+Left key pressed, x: 920
+Enemy hit! Bullet (1033,70) hit enemy (1000,50)
+Bullet fired! Total: 15
+fire
+Enemy 5 fired bullet from (1120, 90)
+Left key pressed, x: 980
+Left key pressed, x: 950
+Left key pressed, x: 920
+Enemy hit! Bullet (1033,150) hit enemy (1000,130)
+Bullet fired! Total: 16
+fire
+Enemy 5 fired bullet from (1120, 130)
+Left key pressed, x: 1070
+Left key pressed, x: 1040
+Left key pressed, x: 1010
+Left key pressed, x: 980
+Left key pressed, x: 950
+Left key pressed, x: 920
+Bullet fired! Total: 17
+fire
+Enemy 5 fired bullet from (1080, 130)
+Left key pressed, x: 1010
+Left key pressed, x: 980
+Left key pressed, x: 950
+Enemy hit! Bullet (1063,190) hit enemy (1040,170)
+Left key pressed, x: 920
+Bullet fired! Total: 18
+Left key pressed, x: 1010
+fire
+Enemy 1 fired bullet from (640, 130)
+Left key pressed, x: 980
+Left key pressed, x: 950
+Left key pressed, x: 920
+Left key pressed, x: 890
+Left key pressed, x: 860
+Left key pressed, x: 830
+Left key pressed, x: 800
+Left key pressed, x: 770
+Left key pressed, x: 740
+Bullet fired! Total: 19
+fire
+Enemy 5 fired bullet from (1000, 130)
+Left key pressed, x: 710
+Enemy hit! Bullet (763,110) hit enemy (760,90)
+Left key pressed, x: 680
+Left key pressed, x: 650
+Left key pressed, x: 620
+Left key pressed, x: 590
+Left key pressed, x: 560
+Left key pressed, x: 530
+Bullet fired! Total: 20
+Left key pressed, x: 500
+Left key pressed, x: 470
+fire
+Enemy 1 fired bullet from (560, 130)
+Left key pressed, x: 440
+Enemy hit! Bullet (553,110) hit enemy (520,90)
+Left key pressed, x: 410
 Left key pressed, x: 380
 Left key pressed, x: 350
-fire
-Enemy 12 fired bullet from (420, 250)
 Left key pressed, x: 320
-Left key pressed, x: 290
-Left key pressed, x: 260
+Bullet fired! Total: 21
 fire
-Enemy 7 fired bullet from (560, 170)
-Left key pressed, x: 470
+Enemy 5 fired bullet from (920, 130)
+Enemy hit! Bullet (373,110) hit enemy (380,90)
+Shield 3 hit by bullet!
 fire
-Enemy 12 fired bullet from (500, 250)
-Left key pressed, x: 530
-Left key pressed, x: 500
-Left key pressed, x: 530
-Left key pressed, x: 500
-Left key pressed, x: 470
-Left key pressed, x: 440
+Enemy 5 fired bullet from (880, 130)
+Left key pressed, x: 770
+Bullet fired! Total: 22
+Left key pressed, x: 800
 fire
-Enemy 15 fired bullet from (840, 250)
-Left key pressed, x: 530
-Left key pressed, x: 530
-Left key pressed, x: 530
-Left key pressed, x: 530
-Left key pressed, x: 500
-Left key pressed, x: 470
-Left key pressed, x: 440
-Left key pressed, x: 410
-Left key pressed, x: 470
-Left key pressed, x: 470
-Left key pressed, x: 470
+Enemy 5 fired bullet from (840, 130)
+Left key pressed, x: 770
+Left key pressed, x: 740
+Left key pressed, x: 710
+Bullet fired! Total: 23
 fire
-Enemy 12 fired bullet from (580, 250)
-Left key pressed, x: 470
-Left key pressed, x: 530
-Left key pressed, x: 500
-Left key pressed, x: 650
-Left key pressed, x: 620
-fire
-Enemy 1 fired bullet from (720, 90)
-Left key pressed, x: 590
-Shield 2 hit by bullet!
-Left key pressed, x: 650
-Left key pressed, x: 620
-Left key pressed, x: 590
-fire
-Enemy 17 fired bullet from (1120, 290)
-Left key pressed, x: 560
-Left key pressed, x: 530
-Left key pressed, x: 500
-Enemy hit! Bullet (583,270) hit enemy (580,250)
-Left key pressed, x: 470
-Left key pressed, x: 440
-fire
-Enemy 0 fired bullet from (580, 130)
-Left key pressed, x: 470
-Enemy hit! Bullet (523,110) hit enemy (520,90)
-fire
-Enemy 9 fired bullet from (840, 210)
-Left key pressed, x: 590
-Left key pressed, x: 560
-Left key pressed, x: 530
-fire
-Enemy 11 fired bullet from (1000, 210)
-Enemy hit! Bullet (553,190) hit enemy (560,170)
-fire
-Enemy 16 fired bullet from (860, 290)
+Enemy 5 fired bullet from (800, 130)
+Enemy hit! Bullet (793,110) hit enemy (760,90)
+Final Score Calculation:
+Base: 10000, Bullet penalty: 1150, Time penalty: 220
+Final Score: 8630
+=== GAME STATISTICS ===
+Bullets Fired: 23
+Game Time: 22 seconds
+Final Score: 8630
+shield_y: 614
+Score system initialized. Start time: 1408
