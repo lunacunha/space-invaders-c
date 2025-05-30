@@ -5,6 +5,8 @@ extern uint8_t irq_set_keyboard;
 extern int timer_counter;
 extern vbe_mode_info_t mode_info;
 
+
+
 // Include the XPMs
 #include "../../xpm/characters/number_char.h"
 #include "../../xpm/characters/letter_char.h"
@@ -61,6 +63,9 @@ GameScore current_score = {0, 0, 0};
 int game_start_time = 0;
 bool game_active = false;
 static bool highscore_saved_this_game = false;
+HighScoreEntry highscores[MAX_HIGHSCORES];
+int highscore_count = 0;
+
 
 void score_init() {
     current_score.bullets_fired = 0;
@@ -181,18 +186,17 @@ int save_highscore_to_csv(const char* name, int score, int bullets, int time) {
     
     printf("Highscore successfully saved: %s - %d points\n", name, score);
     
-    // Verify the save by reading the file
-    printf("Verifying save by reading file...\n");
-    FILE* verify = fopen(CSV_FILENAME, "r");
-    if (verify) {
-        char line[256];
-        int line_count = 0;
-        while (fgets(line, sizeof(line), verify)) {
-            printf("Line %d: %s", line_count++, line);
-        }
-        fclose(verify);
-    } else {
-        printf("Could not verify save - file not readable\n");
+    // Add to in-memory array if there's space
+    if (highscore_count < MAX_HIGHSCORES) {
+        strcpy(highscores[highscore_count].name, name);
+        highscores[highscore_count].score = score;
+        highscores[highscore_count].bullets_fired = bullets;
+        highscores[highscore_count].game_time_seconds = time;
+        highscore_count++;
+        
+        // Re-sort after adding new score
+        sort_highscores();
+        printf("Score added to in-memory array and re-sorted\n");
     }
     
     return 0;
@@ -203,11 +207,12 @@ int load_highscores_from_csv() {
     FILE* file = fopen(CSV_FILENAME, "r");
     if (file == NULL) {
         printf("No highscores file found, will create on first save\n");
+        highscore_count = 0;
         return 0;
     }
     
     char line[256];
-    int count = 0;
+    highscore_count = 0;
     
     // Skip header line
     if (fgets(line, sizeof(line), file) == NULL) {
@@ -216,23 +221,31 @@ int load_highscores_from_csv() {
         return 0;
     }
     
-    printf("=== HIGH SCORES ===\n");
-    while (fgets(line, sizeof(line), file) && count < MAX_HIGHSCORES) {
+    printf("=== LOADING HIGH SCORES ===\n");
+    while (fgets(line, sizeof(line), file) && highscore_count < MAX_HIGHSCORES) {
         char name[MAX_NAME_LENGTH];
         int score, bullets, time;
         
         if (sscanf(line, "%19[^,],%d,%d,%d", name, &score, &bullets, &time) == 4) {
-            printf("%d. %s - %d points (%d bullets, %d seconds)\n", 
-                   count + 1, name, score, bullets, time);
-            count++;
+            strcpy(highscores[highscore_count].name, name);
+            highscores[highscore_count].score = score;
+            highscores[highscore_count].bullets_fired = bullets;
+            highscores[highscore_count].game_time_seconds = time;
+            
+            printf("Loaded: %s - %d points (%d bullets, %d seconds)\n", 
+                   name, score, bullets, time);
+            highscore_count++;
         }
     }
     
     fclose(file);
-    printf("Loaded %d high scores\n", count);
-    return count;
+    
+    // Sort the scores after loading
+    sort_highscores();
+    
+    printf("Loaded %d high scores\n", highscore_count);
+    return highscore_count;
 }
-
 // Function to save highscore when player wins
 void save_win_highscore() {
     if (!highscore_saved_this_game) {
@@ -245,6 +258,8 @@ void save_win_highscore() {
         printf("Highscore already saved for this game\n");
     }
 }
+
+
 
 // Draw single letter at position
 void draw_letter(char letter, int x, int y) {
@@ -393,6 +408,82 @@ void draw_final_score_display() {
     }
     
     draw_text_centered("PRESS ENTER", center_x, start_y + (line_spacing * 6));
+}
+void sort_highscores() {
+    if (highscore_count <= 1) return;
+    
+    // Simple bubble sort - sufficient for small arrays
+    for (int i = 0; i < highscore_count - 1; i++) {
+        for (int j = 0; j < highscore_count - i - 1; j++) {
+            if (highscores[j].score < highscores[j + 1].score) {
+                // Swap entries
+                HighScoreEntry temp = highscores[j];
+                highscores[j] = highscores[j + 1];
+                highscores[j + 1] = temp;
+            }
+        }
+    }
+    
+    printf("High scores sorted by highest score first\n");
+}
+
+void draw_scoreboard_menu() {
+    extern vbe_mode_info_t mode_info;
+    
+    int center_x = mode_info.XResolution / 2;
+    int start_y = 80;
+    int line_height = 40;
+    
+    // Draw title
+    draw_text_centered("HIGH SCORES", center_x, start_y);
+    
+    // Draw a line under the title
+    int title_y = start_y + 50;
+    
+    // Show top 8 scores to fit on screen nicely
+    int display_count = (highscore_count < 8) ? highscore_count : 8;
+    
+    if (display_count == 0) {
+        draw_text_centered("NO HIGH SCORES YET", center_x, title_y + line_height * 2);
+        draw_text_centered("PLAY A GAME TO SET YOUR FIRST SCORE", center_x, title_y + line_height * 3);
+    } else {
+        // Draw column headers
+        draw_text("RANK", 80, title_y);
+        draw_text("PILOT", 200, title_y);
+        draw_text("SCORE", 400, title_y);
+        draw_text("SHOTS", 550, title_y);
+        draw_text("TIME", 700, title_y);
+        
+        // Draw scores
+        for (int i = 0; i < display_count; i++) {
+            int row_y = title_y + ((i + 1) * line_height);
+            
+            // Draw rank with ordinal suffix
+            char rank_str[8];
+            if (i == 0) sprintf(rank_str, "1ST");
+            else if (i == 1) sprintf(rank_str, "2ND");
+            else if (i == 2) sprintf(rank_str, "3RD");
+            else sprintf(rank_str, "%dTH", i + 1);
+            draw_text(rank_str, 80, row_y);
+            
+            // Draw name
+            draw_text(highscores[i].name, 200, row_y);
+            
+            // Draw score
+            draw_number(highscores[i].score, 400, row_y);
+            
+            // Draw shots
+            draw_number(highscores[i].bullets_fired, 550, row_y);
+            
+            // Draw time with "s" suffix
+            draw_number(highscores[i].game_time_seconds, 700, row_y);
+            draw_text("S", 700 + (calculate_text_width("999")), row_y);
+        }
+    }
+    
+    // Draw instructions at bottom
+    int instruction_y = mode_info.YResolution - 80;
+    draw_text_centered("PRESS ESC TO RETURN TO MENU", center_x, instruction_y);
 }
 
 int score_state() {

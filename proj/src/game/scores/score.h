@@ -1,3 +1,5 @@
+// Enhanced score.h - Add these to your existing score.h file
+
 #ifndef SCORE_H
 #define SCORE_H
 
@@ -13,8 +15,9 @@
 #include "../menu/menu.h"
 
 #define MAX_NAME_LENGTH 20
-#define CSV_FILENAME "highscores.csv"
+#define CSV_FILENAME "./highscores.csv"
 #define MAX_HIGHSCORES 100
+#define MAX_DISPLAY_SCORES 10  // How many scores to show on screen
 
 typedef struct {
     int bullets_fired;
@@ -34,6 +37,10 @@ extern GameScore current_score;
 extern int game_start_time;
 extern bool game_active;
 
+// High score storage
+extern HighScoreEntry highscores[MAX_HIGHSCORES];
+extern int highscore_count;
+
 // Score functions
 void score_init();
 void score_add_bullet();
@@ -45,8 +52,11 @@ void score_reset();
 char* get_random_anime_name();
 int save_highscore_to_csv(const char* name, int score, int bullets, int time);
 int load_highscores_from_csv();
-void save_win_highscore(); // NEW: Function to call when player wins
+void save_win_highscore();
+void sort_highscores();
+void draw_scoreboard_menu(); 
 
+// Text drawing functions
 void draw_letter(char letter, int x, int y);
 void draw_text(const char* text, int x, int y);
 int calculate_text_width(const char* text);
