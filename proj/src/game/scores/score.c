@@ -60,6 +60,7 @@ static const char* anime_names[] = {
 GameScore current_score = {0, 0, 0};
 int game_start_time = 0;
 bool game_active = false;
+static bool highscore_saved_this_game = false;
 
 void score_init() {
     current_score.bullets_fired = 0;
@@ -67,6 +68,7 @@ void score_init() {
     current_score.final_score = 0;
     game_start_time = timer_counter;
     game_active = true;
+    highscore_saved_this_game = false;
     printf("Score system initialized. Start time: %d\n", game_start_time);
 }
 
@@ -117,6 +119,7 @@ void score_reset() {
     current_score.final_score = 0;
     game_start_time = 0;
     game_active = false;
+    highscore_saved_this_game = false;
 }
 
 char* get_random_anime_name() {
@@ -127,31 +130,76 @@ char* get_random_anime_name() {
     }
     
     int index = rand() % NUM_ANIME_NAMES;
+    printf("Selected character: %s (index %d of %d)\n", anime_names[index], index, NUM_ANIME_NAMES);
     return (char*)anime_names[index];
 }
 
 int save_highscore_to_csv(const char* name, int score, int bullets, int time) {
+    printf("Attempting to save highscore to CSV...\n");
+    printf("Name: %s, Score: %d, Bullets: %d, Time: %d\n", name, score, bullets, time);
+    
+    // First check if file exists
+    FILE* test_file = fopen(CSV_FILENAME, "r");
+    bool file_exists = (test_file != NULL);
+    if (test_file) {
+        fclose(test_file);
+        printf("CSV file already exists\n");
+    } else {
+        printf("CSV file doesn't exist, will create it\n");
+    }
+    
     FILE* file = fopen(CSV_FILENAME, "a"); // Append mode
     if (file == NULL) {
-        // Try to create the file with header if it doesn't exist
+        printf("Failed to open file in append mode, trying write mode...\n");
         file = fopen(CSV_FILENAME, "w");
         if (file == NULL) {
-            printf("Error: Could not create highscores file\n");
+            printf("Error: Could not create highscores file at all!\n");
+            printf("Current working directory issue or permission problem\n");
             return -1;
         }
-        // Write CSV header
+        file_exists = false;
+    }
+    
+    // Write header if file is new
+    if (!file_exists) {
+        printf("Writing CSV header...\n");
         fprintf(file, "Name,Score,Bullets_Fired,Game_Time_Seconds\n");
+        fflush(file);
     }
     
     // Write the highscore entry
-    fprintf(file, "%s,%d,%d,%d\n", name, score, bullets, time);
+    printf("Writing highscore entry...\n");
+    int result = fprintf(file, "%s,%d,%d,%d\n", name, score, bullets, time);
+    if (result < 0) {
+        printf("Error writing to file!\n");
+        fclose(file);
+        return -1;
+    }
     
+    fflush(file);
     fclose(file);
-    printf("Highscore saved: %s - %d points\n", name, score);
+    
+    printf("Highscore successfully saved: %s - %d points\n", name, score);
+    
+    // Verify the save by reading the file
+    printf("Verifying save by reading file...\n");
+    FILE* verify = fopen(CSV_FILENAME, "r");
+    if (verify) {
+        char line[256];
+        int line_count = 0;
+        while (fgets(line, sizeof(line), verify)) {
+            printf("Line %d: %s", line_count++, line);
+        }
+        fclose(verify);
+    } else {
+        printf("Could not verify save - file not readable\n");
+    }
+    
     return 0;
 }
 
 int load_highscores_from_csv() {
+    printf("Attempting to load highscores from: %s\n", CSV_FILENAME);
     FILE* file = fopen(CSV_FILENAME, "r");
     if (file == NULL) {
         printf("No highscores file found, will create on first save\n");
@@ -163,6 +211,7 @@ int load_highscores_from_csv() {
     
     // Skip header line
     if (fgets(line, sizeof(line), file) == NULL) {
+        printf("Empty file or read error\n");
         fclose(file);
         return 0;
     }
@@ -180,7 +229,21 @@ int load_highscores_from_csv() {
     }
     
     fclose(file);
+    printf("Loaded %d high scores\n", count);
     return count;
+}
+
+// Function to save highscore when player wins
+void save_win_highscore() {
+    if (!highscore_saved_this_game) {
+        char* winner_name = get_random_anime_name();
+        printf("Player won! Saving highscore for %s\n", winner_name);
+        save_highscore_to_csv(winner_name, current_score.final_score, 
+                             current_score.bullets_fired, current_score.game_time_seconds);
+        highscore_saved_this_game = true;
+    } else {
+        printf("Highscore already saved for this game\n");
+    }
 }
 
 // Draw single letter at position
@@ -295,22 +358,6 @@ void draw_live_score() {
     draw_label_and_number(shots_text, current_score.bullets_fired, shots_x, top_y);
 }
 
-// Draw single letter at 2x scale
-void draw_letter_2x(char letter, int x, int y) {
-    if (letter >= 'A' && letter <= 'Z') {
-        // Draw the letter 4 times in a 2x2 pattern for 2x scale
-        print_xpm(letters[letter - 'A'], x, y);
-        print_xpm(letters[letter - 'A'], x + CHAR_WIDTH, y);
-        print_xpm(letters[letter - 'A'], x, y + CHAR_HEIGHT);
-        print_xpm(letters[letter - 'A'], x + CHAR_WIDTH, y + CHAR_HEIGHT);
-    } else if (letter >= 'a' && letter <= 'z') {
-        print_xpm(letters[letter - 'a'], x, y);
-        print_xpm(letters[letter - 'a'], x + CHAR_WIDTH, y);
-        print_xpm(letters[letter - 'a'], x, y + CHAR_HEIGHT);
-        print_xpm(letters[letter - 'a'], x + CHAR_WIDTH, y + CHAR_HEIGHT);
-    }
-}
-
 // Draw final score screen
 void draw_final_score_display() {
     int center_x = mode_info.XResolution / 2;
@@ -323,16 +370,10 @@ void draw_final_score_display() {
     // Display "YOU WON" at the top
     draw_text_centered("YOU WON", center_x, start_y);
     
-    // Get random name and save to CSV (only if this is a fresh win)
-    static bool score_saved = false;
+    // Get the assigned name (should already be saved by now)
     static char assigned_name[MAX_NAME_LENGTH] = "";
-    
-    if (!score_saved) {
-        char* player_name = get_random_anime_name();
-        strcpy(assigned_name, player_name);
-        save_highscore_to_csv(player_name, current_score.final_score, 
-                             current_score.bullets_fired, current_score.game_time_seconds);
-        score_saved = true;
+    if (assigned_name[0] == '\0') {
+        strcpy(assigned_name, "UNKNOWN");
     }
     
     // Display player name
@@ -352,12 +393,6 @@ void draw_final_score_display() {
     }
     
     draw_text_centered("PRESS ENTER", center_x, start_y + (line_spacing * 6));
-    
-    // Reset the flag when returning to menu
-    if (scancode == KB_ENTER || scancode == KB_BREAK_ESC) {
-        score_saved = false;
-        assigned_name[0] = '\0';
-    }
 }
 
 int score_state() {

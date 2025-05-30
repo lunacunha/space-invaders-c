@@ -45,6 +45,7 @@ void score_reset();
 char* get_random_anime_name();
 int save_highscore_to_csv(const char* name, int score, int bullets, int time);
 int load_highscores_from_csv();
+void save_win_highscore(); // NEW: Function to call when player wins
 
 void draw_letter(char letter, int x, int y);
 void draw_text(const char* text, int x, int y);

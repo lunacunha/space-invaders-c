@@ -188,7 +188,7 @@ int game_state() {
                         // MODIFIED: Check if the player has lost
                         if (player_lost) {
                             score_calculate_final(); // Still calculate final score
-                            menu_set_state(MENU_GAME_OVER); // NEW: Set to game over instead of scores
+                            menu_set_state(MENU_GAME_OVER); // Set to game over instead of scores
                             return 0; // Exit game loop on player loss
                         }
                         
@@ -197,10 +197,9 @@ int game_state() {
                             player_win = true;
                             score_calculate_final();
                             
-                            // Save high score with random anime name
-                            char* winner_name = get_random_anime_name();
-                            save_highscore_to_csv(winner_name, current_score.final_score, 
-                                                 current_score.bullets_fired, current_score.game_time_seconds);
+                            // FIXED: Call the dedicated save function
+                            printf("Player won! Calling save_win_highscore()...\n");
+                            save_win_highscore();
                             
                             menu_set_state(MENU_SCORES);
                             return 0;
