@@ -119,9 +119,12 @@ int menu_handler() {
         if (vg_draw_rectangle(0, 0, mode_info.XResolution, mode_info.YResolution, 0x000000)) return 1;
 
         if (!player_win && !player_lost) {
+            if (print_xpm(score_board, 300, 100)) return 1;
             if (print_xpm(cursor, 400, 300)) return 1;
             if (print_xpm(message1, 300, 500)) return 1;
         } else if (player_win) {
+            
+            // Display score information visually
             draw_final_score_display();
             
             // Keep console output for debugging
@@ -129,9 +132,6 @@ int menu_handler() {
             printf("Bullets Fired: %d\n", current_score.bullets_fired);
             printf("Game Time: %d seconds\n", current_score.game_time_seconds);
             printf("Final Score: %d\n", current_score.final_score);
-            
-            if (print_xpm(message2, 300, 300)) return 1;  // Additional message
-            if (print_xpm(message1, 300, 500)) return 1;  // "Press ESC"
         } else if (player_lost) {
             if (print_xpm(message4, 400, 200)) return 1;  // "GAME OVER"
             
