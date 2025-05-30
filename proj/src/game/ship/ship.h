@@ -5,6 +5,7 @@
 #include "src/controllers/graphics/graphic.h"
 #include "src/controllers/keyboard/kb_controller.h"
 #include "src/controllers/mouse/mouse.h"
+#include "src/controllers/mouse/i8042.h"
 #include "src/xpm/game/player.h"
 #include "src/xpm/messages.h"
 #include "src/game/enemies/enemies.h"
